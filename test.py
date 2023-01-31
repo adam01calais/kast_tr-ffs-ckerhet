@@ -1,1 +1,1 @@
-#hej
+print("hej")
