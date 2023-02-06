@@ -1,26 +1,39 @@
+import subprocess
 import pyicloud
 from pyicloud import PyiCloudService
 
 class CameraControl:
-    #device1 = PyiCloudService("username1", "password1")
-    #username och password för icloud
+# The device1 and device2 input arguments should be dictionaries containing information about the devices, 
+# including the platform ("ios" or "android"), username and password for iOS devices, 
+# and device ID for Android devices.
     def __init__(self, device1, device2):
         self.device1 = device1
         self.device2 = device2
 
     def start_recording(self):
-        self.device1.start_recording()
-        self.device2.start_recording()
+        if self.device1["platform"] == "ios":
+            icloud = PyiCloudService(self.device1["username"], self.device1["password"])
+            icloud.start_recording()
+        else:
+            subprocess.call(["adb", "-s", self.device1["device_id"], "shell", "screenrecord", "--time-limit", "10", "/sdcard/test.mp4"])
 
+        if self.device2["platform"] == "ios":
+            icloud = PyiCloudService(self.device2["username"], self.device2["password"])
+            icloud.start_recording()
+        else:
+            subprocess.call(["adb", "-s", self.device2["device_id"], "shell", "screenrecord", "--time-limit", "10", "/sdcard/test.mp4"])
+            
     def stop_recording(self):
-        self.device1.stop_recording()
-        self.device2.stop_recording()
-        
-    def set_resolution(self, resolution):
-        self.device1.set_resolution(resolution)
-        self.device2.set_resolution(resolution)
+        if self.device1["platform"] == "ios":
+            icloud = PyiCloudService(self.device1["username"], self.device1["password"])
+            icloud.stop_recording()
+        else:
+            subprocess.call(["adb", "-s", self.device1["device_id"], "shell", "pkill", "screenrecord"])
 
-    def set_frame_rate(self, frame_rate):
-        self.device1.set_frame_rate(frame_rate)
-        self.device2.set_frame_rate(frame_rate)
+        if self.device2["platform"] == "ios":
+            icloud = PyiCloudService(self.device2["username"], self.device2["password"])
+            icloud.stop_recording()
+        else:
+            subprocess.call(["adb", "-s", self.device2["device_id"], "shell", "pkill", "screenrecord"])
+
 
