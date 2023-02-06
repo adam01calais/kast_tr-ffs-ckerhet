@@ -6,6 +6,6 @@ for i in range(2,10):
     fst_fibonacci = snd_fibonacci
     snd_fibonacci = fst_fibonacci + temp  
     fibonacci.append(snd_fibonacci)
-
+#kommentar
 
 print(fibonacci)
