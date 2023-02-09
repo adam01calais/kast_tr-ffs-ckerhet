@@ -19,7 +19,6 @@ class ImageProcessing:
         ball_stationary = False
         start_time = time.time()
         dodgeball_cascade = cv2.CascadeClassifier('dodgeball.xml')
-        #cross_positions = []
         cross_position_x_1=[]
         cross_position_y_1=[]
         cross_position_x_2=[]
