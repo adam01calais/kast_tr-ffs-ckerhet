@@ -8,10 +8,10 @@ class ImageProcessing:
     def __init__(self, video1, video2):
         self.video1 = cv2.VideoCapture(video1)
         self.video2 = cv2.VideoCapture(video2)
-        self.cross_positions_x_1=[]
-        self.cross_positions_y_1=[]
-        self.cross_positions_x_2=[]
-        self.cross_positions_y_2=[]
+        self.cross_position_x_1=[]
+        self.cross_position_y_1=[]
+        self.cross_position_x_2=[]
+        self.cross_position_y_2=[]
         self.dodgeball_position_x=[]
         self.dodgeball_position_y=[]
 
@@ -51,15 +51,15 @@ class ImageProcessing:
             if len(cross_position_x_1) or len(cross_position_y_1) or len(cross_position_x_2) or len(cross_position_y_2) < 2:
                 continue
 
-            change = max(abs(cross_positions_x_1[-1] - cross_positions_x_1[-2]), abs(cross_positions_y_1[-1] - cross_positions_y_1[-2]), abs(cross_positions_x_2[-1] - cross_positions_x_2[-2]), abs(cross_positions_y_2[-1] - cross_positions_y_2[-2]))
+            change = max(abs(cross_position_x_1[-1] - cross_position_x_1[-2]), abs(cross_position_y_1[-1] - cross_position_y_1[-2]), abs(cross_position_x_2[-1] - cross_position_x_2[-2]), abs(cross_position_y_2[-1] - cross_position_y_2[-2]))
             if change < 10:  # if the change in position is less than 10 pixels
                 time_stationary = current_time - start_time
                 if time_stationary >= 4:
                     ball_stationary = True
-                    cross_positions_x_1=cross_positions_x_1[-1]
-                    cross_positions_y_1=cross_positions_y_1[-1]
-                    cross_positions_x_2=cross_positions_x_2[-1]
-                    cross_positions_y_2=cross_positions_y_2[-1]
+                    cross_position_x_1=cross_position_x_1[-1]
+                    cross_position_y_1=cross_position_y_1[-1]
+                    cross_position_x_2=cross_position_x_2[-1]
+                    cross_position_y_2=cross_position_y_2[-1]
                     break
             else:
                 start_time = current_time
@@ -71,10 +71,10 @@ class ImageProcessing:
         self.video2.release()
         cv2.destroyAllWindows()
         
-        self.cross_positions_x_1=cross_positions_x_1
-        self.cross_positions_x_2=cross_positions_x_2
-        self.cross_positions_y_1=cross_positions_y_1
-        self.cross_positions_y_2=cross_positions_y_2
+        self.cross_position_x_1=cross_position_x_1
+        self.cross_position_x_2=cross_position_x_2
+        self.cross_position_y_1=cross_position_y_1
+        self.cross_position_y_2=cross_position_y_2
 
     def detect_dodgeball(self):
         # Använder en cascade classifier som är specificerad för att urskilja dodgeballs i bilder.
@@ -96,7 +96,7 @@ class ImageProcessing:
             if len(dodgeball_position_x_1) or len(dodgeball_position_y_2) < 1:
                 continue
 
-            if dodgeball_position_x_1[-1]>=self.cross_positions_x_1:
+            if dodgeball_position_x_1[-1]>=self.cross_position_x_1:
                 continue
 
             else:
@@ -107,7 +107,7 @@ class ImageProcessing:
                     cv2.rectangle(frame1,(x,y),(x+w,y+h),(255,0,0),2)
                     dodgeball_position_y_1.append(center_y_1)
 
-            if dodgeball_position_y_2[-1]>=self.cross_positions_y_2:
+            if dodgeball_position_y_2[-1]>=self.cross_position_y_2:
                 continue
             else:
                 for (x,y,w,h) in dodgeballs2:
@@ -124,7 +124,7 @@ class ImageProcessing:
             # med väggen och går genom centrum av kalibreringsbollen, dvs når 'cross_positions' i 
             # 'calibrate_cross'. 
             # Behöver alltså få in infon från den metoden till denna.
-            if dodgeball_position_x_1[-1]>=self.cross_positions_x_1 and dodgeball_position_y_2[-1]>=self.cross_positions_y_2:
+            if dodgeball_position_x_1[-1]>=self.cross_position_x_1 and dodgeball_position_y_2[-1]>=self.cross_position_y_2:
                 break
         self.video1.release()
         self.video2.release()
