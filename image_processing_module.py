@@ -1,18 +1,32 @@
 import cv2
+import time
 
 class ImageProcessing:
     
+    # video1 (Kameran från sidan)
+    # video2 (Kameran underifrån)
     def __init__(self, video1, video2):
-        self.video1 = video1
-        self.video2 = video2
+        self.video1 = cv2.VideoCapture(video1)
+        self.video2 = cv2.VideoCapture(video2)
+        self.cross_positions_x_1=[]
+        self.cross_positions_y_1=[]
+        self.cross_positions_x_2=[]
+        self.cross_positions_y_2=[]
+        self.dodgeball_position_x=[]
+        self.dodgeball_position_y=[]
+
     def calibrate_cross(self):
-        # Här håller vi en dodgeball mot krysset för att veta vad centrum är för krysset. 
-        # Ville egentligen detektera krysset direkt, 
-        # men verkar vara svårare än att detektera bollen av någon anledning, 
-        # så därför använder jag mig av bollen för att kalibrera krysset
+        ball_stationary = False
+        start_time = time.time()
         dodgeball_cascade = cv2.CascadeClassifier('dodgeball.xml')
-        cross_positions = []
-        while True:
+        cross_position_x_1=[]
+        cross_position_y_1=[]
+        cross_position_x_2=[]
+        cross_position_y_2=[]
+
+        while not ball_stationary:
+            # code to track the ball's movement
+            current_time = time.time()
             ret1, frame1 = self.video1.read()
             ret2, frame2 = self.video2.read()
             gray1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
@@ -20,29 +34,56 @@ class ImageProcessing:
             dodgeballs1 = dodgeball_cascade.detectMultiScale(gray1, 1.3, 5)
             dodgeballs2 = dodgeball_cascade.detectMultiScale(gray2, 1.3, 5)
             for (x,y,w,h) in dodgeballs1:
-                #Gör en rektangel runt bollen och för in x-och y-koordinater för video1
+                center_x_1 = (x + (x + w)) / 2
+                center_y_1 = (y + (y + h)) / 2
+                # Gör en rektangel runt bollen och för in x-och y-koordinater för video1
                 cv2.rectangle(frame1,(x,y),(x+w,y+h),(255,0,0),2)
-                cross_positions.append((x, y))
+                cross_position_x_1.append(center_x_1)
+                cross_position_y_1.append(center_y_1)
             for (x,y,w,h) in dodgeballs2:
-                #Gör en rektangel runt bollen och för in x-och y-koordinater för video2
+                center_x_2 = (x + (x + w)) / 2
+                center_y_2 = (y + (y + h)) / 2
+                #G ör en rektangel runt bollen och för in x-och y-koordinater för video2
                 cv2.rectangle(frame2,(x,y),(x+w,y+h),(255,0,0),2)
-                cross_positions.append((x, y))
+                cross_position_x_2.append(center_x_2)
+                cross_position_y_2.append(center_y_2)
+
+            if len(cross_position_x_1) or len(cross_position_y_1) or len(cross_position_x_2) or len(cross_position_y_2) < 2:
+                continue
+
+            change = max(abs(cross_positions_x_1[-1] - cross_positions_x_1[-2]), abs(cross_positions_y_1[-1] - cross_positions_y_1[-2]), abs(cross_positions_x_2[-1] - cross_positions_x_2[-2]), abs(cross_positions_y_2[-1] - cross_positions_y_2[-2]))
+            if change < 10:  # if the change in position is less than 10 pixels
+                time_stationary = current_time - start_time
+                if time_stationary >= 4:
+                    ball_stationary = True
+                    cross_positions_x_1=cross_positions_x_1[-1]
+                    cross_positions_y_1=cross_positions_y_1[-1]
+                    cross_positions_x_2=cross_positions_x_2[-1]
+                    cross_positions_y_2=cross_positions_y_2[-1]
+                    break
+            else:
+                start_time = current_time
+
             cv2.imshow('Video 1',frame1)
             cv2.imshow('Video 2',frame2)
-            # Image processing av videon görs fram till dess att vi trycker på 'q'. 
-            # Behöver definiera om när vi ska sluta mäta bollens position.
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+        
         self.video1.release()
         self.video2.release()
         cv2.destroyAllWindows()
-        # returns poitionen för bollen i förhållande till det vöre vänstra hörnet av kamerans synfält.
-        return cross_positions
+        
+        self.cross_positions_x_1=cross_positions_x_1
+        self.cross_positions_x_2=cross_positions_x_2
+        self.cross_positions_y_1=cross_positions_y_1
+        self.cross_positions_y_2=cross_positions_y_2
 
     def detect_dodgeball(self):
         # Använder en cascade classifier som är specificerad för att urskilja dodgeballs i bilder.
+        # Behöver göra 'dodgeball.xml' själva
         dodgeball_cascade = cv2.CascadeClassifier('dodgeball.xml')
-        positions = []
+        dodgeball_position_x_1 = []
+        dodgeball_position_x_2 = []
+        dodgeball_position_y_1 = []
+        dodgeball_position_y_2 = []
         while True:
             # ret1 och ret2 anger om videon var korrekt läst eller inte (True eller False)
             ret1, frame1 = self.video1.read()
@@ -51,20 +92,30 @@ class ImageProcessing:
             gray2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
             dodgeballs1 = dodgeball_cascade.detectMultiScale(gray1, 1.3, 5)
             dodgeballs2 = dodgeball_cascade.detectMultiScale(gray2, 1.3, 5)
-            for (x,y,w,h) in dodgeballs1:
-                # Gör en rektangel runt bollen och för in x-och y-koordinater för video1
-                # x och y är här utifrån det övre vänstra hörnet av videon.
-                center_x = (x + (x + w)) / 2
-                center_y = (y + (y + h)) / 2
-                cv2.rectangle(frame1,(x,y),(x+w,y+h),(255,0,0),2)
-                positions.append((center_x, center_y))
-            for (x,y,w,h) in dodgeballs2:
-                # Gör en rektangel runt bollen och för in x-och y-koordinater för video2
-                # x och y är här utifrån det övre vänstra hörnet av videon.
-                center_x = (x + (x + w)) / 2
-                center_y = (y + (y + h)) / 2
-                cv2.rectangle(frame1,(x,y),(x+w,y+h),(255,0,0),2)
-                positions.append((center_x, center_y))
+
+            if len(dodgeball_position_x_1) or len(dodgeball_position_y_2) < 1:
+                continue
+
+            if dodgeball_position_x_1[-1]>=self.cross_positions_x_1:
+                continue
+
+            else:
+                for (x,y,w,h) in dodgeballs1:
+                    # x och y är här utifrån det övre vänstra hörnet av videon.
+                    center_y_1 = (y + (y + h)) / 2
+                    # Gör en rektangel runt bollen och för in x-och y-koordinater för video1
+                    cv2.rectangle(frame1,(x,y),(x+w,y+h),(255,0,0),2)
+                    dodgeball_position_y_1.append(center_y_1)
+
+            if dodgeball_position_y_2[-1]>=self.cross_positions_y_2:
+                continue
+            else:
+                for (x,y,w,h) in dodgeballs2:
+                    # x och y är här utifrån det övre vänstra hörnet av videon.
+                    center_x_2 = (x + (x + w)) / 2
+                    # Gör en rektangel runt bollen och för in x-och y-koordinater för video2
+                    cv2.rectangle(frame1,(x,y),(x+w,y+h),(255,0,0),2)
+                    dodgeball_position_x_2.append(center_x_2)
             # Tror de här två raderna visar upp den specifika framen. Är en ganska cool funktion att visa 
             # upp den exakta bilden då bollen träffar väggen i appen. Eventuellt
             cv2.imshow('Video 1',frame1)
@@ -73,13 +124,13 @@ class ImageProcessing:
             # med väggen och går genom centrum av kalibreringsbollen, dvs når 'cross_positions' i 
             # 'calibrate_cross'. 
             # Behöver alltså få in infon från den metoden till denna.
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+            if dodgeball_position_x_1[-1]>=self.cross_positions_x_1 and dodgeball_position_y_2[-1]>=self.cross_positions_y_2:
                 break
         self.video1.release()
         self.video2.release()
         cv2.destroyAllWindows()
         # returns poitionen för bollens centrum i förhållande till det vöre vänstra hörnet av 
         # kamerornas synfält.
-        return positions
-
-    
+        self.dodgeball_position_x = dodgeball_position_x_2
+        self.dodgeball_position_y = dodgeball_position_y_1
+        return self.dodgeball_position_x, self.dodgeball_position_y
