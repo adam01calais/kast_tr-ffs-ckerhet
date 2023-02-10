@@ -1,4 +1,6 @@
 from urllib.request import urlopen
-html = urlopen("https://www.gsmarena.com/oneplus_8-10161.php")
-print(html.read())
+from bs4 import BeautifulSoup
+html = urlopen("https://www.walmart.com/ip/Used-OnePlus-8-5G-GSM-Unlocked-128GB-Interstellar-Glow-Black/589716447")
+bsObj = BeautifulSoup(html.read())
+print(bsObj.prettify)
 # Kommer börja test-scrapea här. 
