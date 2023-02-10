@@ -30,13 +30,8 @@
 
 import cv2
 
-<<<<<<< HEAD
 # Load the image file
 img = cv2.imread("image.jpg")
-=======
-# Load the video file
-video = cv2.VideoCapture("\Users\Joakim\Documents\3an\Kandidatarbete")
->>>>>>> bc93c1459acd369854baef830182c81b1cb24c70
 
 # Check if the image was successfully loaded
 if img is None:
