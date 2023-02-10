@@ -6,3 +6,4 @@ nummer1 = 10
 nummer2 = 2
 print(nummer1*nummer2)
 
+p
