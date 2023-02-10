@@ -1,7 +1,7 @@
 import cv2
 
 # Load the video file
-video = cv2.VideoCapture("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Documents/IMG_2768.mov")
+video = cv2.VideoCapture("\Users\Joakim\Documents\3an\Kandidatarbete")
 
 # Check if the video was successfully opened
 if not video.isOpened():
