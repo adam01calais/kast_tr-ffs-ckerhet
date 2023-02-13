@@ -28,7 +28,7 @@
 # video.release()
 # cv2.destroyAllWindows()
 
-import cv2
+import cv2 
 
 # Load the image file
 img = cv2.imread("image.jpg")
