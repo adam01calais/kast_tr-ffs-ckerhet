@@ -1,0 +1,1 @@
+# Kör 'opencv_annotation --annotations=pos.txt --images=Else/Cascade_train/positive/' i terminalen

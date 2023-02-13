@@ -1,48 +1,11 @@
-# import cv2
+import torch
+# Loading in yolov5s - you can switch to larger models such as yolov5m or yolov5l, or smaller such as yolov5n
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+img = 'https://i.ytimg.com/vi/q71MCWAEfL8/maxresdefault.jpg'  # or file, Path, PIL, OpenCV, numpy, list
+results = model(img)
+fig, ax = plt.subplots(figsize=(16, 12))
+ax.imshow(results.render()[0])
+plt.show()
 
-# # Load the video file
-# video = cv2.VideoCapture("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Documents/IMG_2768.mov")
 
-# # Check if the video was successfully opened
-# if not video.isOpened():
-#     print("Error: Could not open the video file.")
-#     exit()
 
-# # Loop over each frame of the video
-# while True:
-#     # Read the next frame from the video
-#     ret, frame = video.read()
-
-#     # Break out of the loop if we have reached the end of the video
-#     if not ret:
-#         break
-
-#     # Display the current frame
-#     cv2.imshow("Video", frame)
-
-#     # Break out of the loop if the user presses the 'q' key
-#     if cv2.waitKey(25) & 0xFF == ord('q'):
-#         break
-
-# # Release the video file and close all windows
-# video.release()
-# cv2.destroyAllWindows()
-
-import cv2 
-
-# Load the image file
-img = cv2.imread("image.jpg")
-
-# Check if the image was successfully loaded
-if img is None:
-    print("Error: Could not load the image file.")
-    exit()
-
-# Display the image
-cv2.imshow("Image", img)
-
-# Wait for the user to close the window
-cv2.waitKey(0)
-
-# Close all windows
-cv2.destroyAllWindows()
