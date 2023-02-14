@@ -1,1 +1,0 @@
-# Kör 'opencv_createsamples -info Else/Cascade_train/pos.txt -w 24 -h 24 -num 2000 -vec Else/Cascade_train/pos.vec' i terminalen
