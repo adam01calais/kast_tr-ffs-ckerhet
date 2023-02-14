@@ -33,5 +33,34 @@
 
 # videoCapture.release()
 # cv2.destroyAllWindows()
-base64 images-8.jpeg | curl -d @- \
-"https://detect.roboflow.com/dodgeball-detection/1?api_key=CPkBglSIfMhKhrghnYcq"
+from roboflow import Roboflow
+import cv2
+
+video=cv2.VideoCapture("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159.mov")
+ret, frame = video.read()
+
+import cv2
+
+# Opens the Video file
+cap= cv2.VideoCapture('C:/New/Videos/Play.mp4')
+i=0
+while(cap.isOpened()):
+    ret, frame = cap.read()
+    if ret == False:
+        break
+    cv2.imwrite('kang'+str(i)+'.jpg',frame)
+    i+=1
+
+cap.release()
+cv2.destroyAllWindows()
+
+
+# rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq")
+# project = rf.workspace().project("dodgeball-detection")
+# model = project.version(1).model
+
+##prediction = model.predict("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159.mov")
+
+#print(prediction)
+# infer on a local image
+#print(model.predict("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/haarpositiv/images-8.jpeg", confidence=40, overlap=30).json())
