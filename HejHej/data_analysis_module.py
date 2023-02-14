@@ -7,6 +7,7 @@ class DataAnalysis:
         self.dodgeball_position_x = dodgeball_position_x
         self.dodgeball_position_y = dodgeball_position_y
 
+    # Curve fitting is a type of optimization that finds an optimal set of parameters for a defined function that best fits a given set of observations.
     def calculate_velocity(self):
         time = np.linspace(0, len(self.dodgeball_position_x), len(self.dodgeball_position_y))
         velocity1, _ = curve_fit(lambda t, a, b: a*t + b,  time, self.dodgeball_position_x)
