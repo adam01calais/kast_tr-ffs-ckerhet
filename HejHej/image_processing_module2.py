@@ -17,8 +17,7 @@ class ImageProcessing:
 
     def calibrate_cross(self):
         ball_stationary = False
-        start_time = time.time()
-        dodgeball_roboflow = roboflow('infoga video här')
+        dodgeball_roboflow = roboflow('infoga lista med bilder här')
         cross_position_x_1=[]
         cross_position_y_2=[]
         width_1=[]
@@ -27,14 +26,8 @@ class ImageProcessing:
         height_2=[]
 
         while not ball_stationary:
-            # code to track the ball's movement
-            current_time = time.time()
             ret1, frame1 = self.video1.read()
             ret2, frame2 = self.video2.read()
-            #gray1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
-            #gray2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
-            #dodgeballs1 = dodgeball_cascade.detectMultiScale(gray1, 1.3, 5)
-            #dodgeballs2 = dodgeball_cascade.detectMultiScale(gray2, 1.3, 5)
             
             for (x,y,w,h) in dodgeballs1:
                 center_x_1 = (x + (x + w)) / 2
