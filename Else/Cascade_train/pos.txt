@@ -1,3 +1,0 @@
-Else/Cascade_train/positive/images-11.jpeg 1 4 9 212 212
-Else/Cascade_train/positive/images-5.jpeg 1 56 54 113 111
-Else/Cascade_train/positive/images-9.jpeg 1 4 34 60 63

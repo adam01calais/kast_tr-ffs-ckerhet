@@ -1,3 +1,0 @@
-from cascadeutils import generate_negative_description_file
-
-generate_negative_description_file()
