@@ -19,6 +19,6 @@ class DataAnalysis:
     def calculate_accuracy(self, cross_position_x, cross_position_y):
         # error_x och error_y är avståndet från träffpunkten i antalet pixlar
         # Behöver konverteras till cm (kanske?) eller annan längdenhet
-       # error_x = self.dodgeball_position_x[-1] - cross_position_x
-       # error_y = self.dodgeball_position_y[-1] - cross_position_y
-      #  return error_x, error_y
+        # error_x = self.dodgeball_position_x[-1] - cross_position_x
+        # error_y = self.dodgeball_position_y[-1] - cross_position_y
+        #  return error_x, error_y
