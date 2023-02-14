@@ -18,21 +18,24 @@ class ImageProcessing:
     def calibrate_cross(self):
         ball_stationary = False
         start_time = time.time()
-        dodgeball_cascade = cv2.CascadeClassifier('dodgeball.xml')
+        dodgeball_roboflow = roboflow('infoga video här')
         cross_position_x_1=[]
-        cross_position_y_1=[]
-        cross_position_x_2=[]
         cross_position_y_2=[]
+        width_1=[]
+        height_1=[]
+        widht_2=[]
+        height_2=[]
 
         while not ball_stationary:
             # code to track the ball's movement
             current_time = time.time()
             ret1, frame1 = self.video1.read()
             ret2, frame2 = self.video2.read()
-            gray1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
-            gray2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
-            dodgeballs1 = dodgeball_cascade.detectMultiScale(gray1, 1.3, 5)
-            dodgeballs2 = dodgeball_cascade.detectMultiScale(gray2, 1.3, 5)
+            #gray1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
+            #gray2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+            #dodgeballs1 = dodgeball_cascade.detectMultiScale(gray1, 1.3, 5)
+            #dodgeballs2 = dodgeball_cascade.detectMultiScale(gray2, 1.3, 5)
+            
             for (x,y,w,h) in dodgeballs1:
                 center_x_1 = (x + (x + w)) / 2
                 center_y_1 = (y + (y + h)) / 2
@@ -43,7 +46,7 @@ class ImageProcessing:
             for (x,y,w,h) in dodgeballs2:
                 center_x_2 = (x + (x + w)) / 2
                 center_y_2 = (y + (y + h)) / 2
-                #G ör en rektangel runt bollen och för in x-och y-koordinater för video2
+                #Gör en rektangel runt bollen och för in x-och y-koordinater för video2
                 cv2.rectangle(frame2,(x,y),(x+w,y+h),(255,0,0),2)
                 cross_position_x_2.append(center_x_2)
                 cross_position_y_2.append(center_y_2)
