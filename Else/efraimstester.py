@@ -39,6 +39,21 @@ import cv2
 video=cv2.VideoCapture("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159.mov")
 ret, frame = video.read()
 
+import cv2
+
+# Opens the Video file
+cap= cv2.VideoCapture('C:/New/Videos/Play.mp4')
+i=0
+while(cap.isOpened()):
+    ret, frame = cap.read()
+    if ret == False:
+        break
+    cv2.imwrite('kang'+str(i)+'.jpg',frame)
+    i+=1
+
+cap.release()
+cv2.destroyAllWindows()
+
 
 # rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq")
 # project = rf.workspace().project("dodgeball-detection")
