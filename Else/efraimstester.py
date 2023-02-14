@@ -1,65 +1,27 @@
-# import cv2
-# import numpy as np
-
-# videoCapture=cv2.VideoCapture('/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1160.mov')
-# prevCircle = None
-# dist = lambda x1, y1, x2, y2: (x1-x2)**2+(y1-y2)**2
-
-# while True:
-#     ret, frame = videoCapture.read()
-#     if not ret: break
-
-#     grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-#     blurFrame = cv2.GaussianBlur(grayFrame, (23,23), 0)
-
-#     circles = cv2.HoughCircles(blurFrame, cv2.HOUGH_GRADIENT, 1.2, 100, param1=100, param2=30, minRadius=25, maxRadius=300)
-
-#     if circles is not None:
-#         circles = np.uint16(np.around(circles))
-#         chosen = None
-#         for i in circles[0, :]:
-#             if chosen is None: chosen = i
-#             if prevCircle is not None:
-#                 if dist(chosen[0],chosen[1],prevCircle[0],prevCircle[1]) <= dist(i[0],i[1],prevCircle[0],prevCircle[1]):
-#                     chosen=i
-#         cv2.circle(frame, (chosen[0], chosen[1]), 1, (0,100,100), 3)
-#         cv2.circle(frame, (chosen[0], chosen[1]), chosen[2], (255,0,255),3)
-#         prevCircle=chosen
-
-#     cv2.imshow('Circles', frame)
-
-
-#     if cv2.waitKey(1) & 0xFF == ord('q'): break
-
-# videoCapture.release()
-# cv2.destroyAllWindows()
 from roboflow import Roboflow
-import cv2
+# import cv2
+# import os
 
-video=cv2.VideoCapture("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159.mov")
-ret, frame = video.read()
+# video=cv2.VideoCapture("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159.mov")
+# i=0
+# path= "/Users/efraimzetterqvist/Documents/dodge"
+# while(video.isOpened()):
+#     ret, frame = video.read()
+#     if ret == False:
+#         break
+#     cv2.imwrite(os.path.join(path,'dodge'+str(i)+'.jpg'),frame)
+#     i+=1
 
-import cv2
+# video.release()
+# cv2.destroyAllWindows()
 
-# Opens the Video file
-cap= cv2.VideoCapture('C:/New/Videos/Play.mp4')
-i=0
-while(cap.isOpened()):
-    ret, frame = cap.read()
-    if ret == False:
-        break
-    cv2.imwrite('kang'+str(i)+'.jpg',frame)
-    i+=1
+rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq")
+project = rf.workspace().project("dodgeball-detection")
+model = project.version(1).model
 
-cap.release()
-cv2.destroyAllWindows()
-
-
-# rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq")
-# project = rf.workspace().project("dodgeball-detection")
-# model = project.version(1).model
-
-##prediction = model.predict("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159.mov")
+for k in range(1000,1010):
+    prediction = model.predict("/Users/efraimzetterqvist/Documents/dodge/dodge"+str(k)+'.jpg')
+    print(prediction)
 
 #print(prediction)
 # infer on a local image
