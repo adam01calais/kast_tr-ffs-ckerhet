@@ -25,4 +25,8 @@ pixle_size_Rare_UltraWide = int(subPrinted[subPrinted.find("µm")-2: subPrinted.
 rare_camera_ultrawide_stats = [pixles_on_camera_Rare_UltraWide,camera_aparature_Rare_UltraWide, short_lens_Rare_UltraWide,image_sensor_size_Rare_UltraWide,pixle_size_Rare_UltraWide]
 print(rare_camera_ultrawide_stats)
 
+<<<<<<< HEAD
 # Kommer börja test-scrapea här.
+=======
+# Kommer börja test-scrapea här.
+>>>>>>> 3f71dc678f83f41a995baef7de5797bddf98ee65
