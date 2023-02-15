@@ -2,9 +2,10 @@
 import cv2
 import os
 from roboflow import Roboflow
+import shutil
 
 folder_name = "dodge"
-directory_path = "/Users/efraimzetterqvist/Documents/dodge"
+directory_path = "/Users/efraimzetterqvist/Documents"
 os.mkdir(os.path.join(directory_path, folder_name))
 print(f"Created folder {folder_name} in directory {directory_path}")
 
@@ -14,7 +15,7 @@ y = []
 w = []
 h = []
 
-video=cv2.VideoCapture("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159.mov")
+video=cv2.VideoCapture("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159 2.mov")
 
 i=0
 path= "/Users/efraimzetterqvist/Documents/dodge"
@@ -31,7 +32,7 @@ rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq")
 project = rf.workspace().project("dodgeball-detection")
 model = project.version(1).model
 
-for k in range(1000,1003):
+for k in range(1,5):
     prediction = model.predict("/Users/efraimzetterqvist/Documents/dodge/dodge" + str(k) + '.jpg')
     for result in prediction.json()['predictions']:
         x.append(result['x'])
@@ -39,3 +40,5 @@ for k in range(1000,1003):
         w.append(result['width'])
         h.append(result['height'])
 print(x, y, w, h)
+
+shutil.rmtree(path)
