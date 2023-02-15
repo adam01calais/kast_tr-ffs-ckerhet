@@ -17,8 +17,8 @@ class ImageProcessing:
 
     def detect(self, directory_path, video_name, list_of_images_numbers):
 
-        video_name= "IMG_1159 2.mov"
-        directory_path = "/Users/efraimzetterqvist/Documents"
+        #video_name= "IMG_1159 2.mov"
+        #directory_path = "/Users/efraimzetterqvist/Documents"
 
         folder_name = "dodge"
         os.mkdir(os.path.join(directory_path, folder_name))
@@ -29,7 +29,7 @@ class ImageProcessing:
         w = []
         h = []
 
-        video = cv2.VideoCapture(video_path + "/" + video_name)
+        video = cv2.VideoCapture(directory_path + "/" + video_name)
 
         i=0
         path= directory_path + "/" + folder_name
@@ -61,11 +61,9 @@ class ImageProcessing:
         cross_position_x=[]
         cross_position_y=[]
         frames_per_second='webscraping'
-        
-image=ImageProcessing("/Users/efraimzetterqvist/Documents/IMG_1159.mov", "/Users/efraimzetterqvist/Documents/IMG_1159.mov").detect("/Users/efraimzetterqvist/Documents", "IMG_1159.mov", 1000, 1005)
-detected_ball=image.detect("/Users/efraimzetterqvist/Documents", "IMG_1159.mov", 1000, 1005)
         i=range()
-
         while True:
 
             
+#image=ImageProcessing("/Users/efraimzetterqvist/Documents/IMG_1159.mov", "/Users/efraimzetterqvist/Documents/IMG_1159.mov") 
+#detected_ball=image.detect("/Users/efraimzetterqvist/Documents", "IMG_1159.mov", [1000,1001,1002])
