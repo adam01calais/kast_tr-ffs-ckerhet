@@ -15,11 +15,14 @@ class ImageProcessing:
         self.dodgeball_position_x=[]
         self.dodgeball_position_y=[]
 
-    def detect(self, video_path, video_name, a, b):
-        
+    def detect(self, directory_path, video_name, list_of_images_numbers):
+
+        video_name= "IMG_1159 2.mov"
+        directory_path = "/Users/efraimzetterqvist/Documents"
+
         folder_name = "dodge"
-        os.mkdir(os.path.join(video_path, folder_name))
-        print(f"Created folder {folder_name} in directory {video_path}")
+        os.mkdir(os.path.join(directory_path, folder_name))
+        print(f"Created folder {folder_name} in directory {directory_path}")
 
         x = []
         y = []
@@ -29,7 +32,7 @@ class ImageProcessing:
         video = cv2.VideoCapture(video_path + "/" + video_name)
 
         i=0
-        path = video_path + "/" + folder_name 
+        path= directory_path + "/" + folder_name
         while(video.isOpened()):
             ret, frame = video.read()
             if ret == False:
@@ -43,8 +46,8 @@ class ImageProcessing:
         project = rf.workspace().project("dodgeball-detection")
         model = project.version(1).model
 
-        for k in range(a,b):
-            prediction = model.predict(path + "/" + "dodge" + str(k) + '.jpg')
+        for k in list_of_images_numbers:
+            prediction = model.predict(path+"/dodge" + str(k) + '.jpg')
             for result in prediction.json()['predictions']:
                 x.append(result['x'])
                 y.append(result['y'])
@@ -52,12 +55,17 @@ class ImageProcessing:
                 h.append(result['height'])
         print(x, y, w, h)
 
-        shutil.rmtree(path)
-
-    #def calibrate_cross(self):
-
+        shutil.rmtree(path)       
+    
+    def calibrate_cross(self):
+        cross_position_x=[]
+        cross_position_y=[]
+        frames_per_second='webscraping'
+        
 image=ImageProcessing("/Users/efraimzetterqvist/Documents/IMG_1159.mov", "/Users/efraimzetterqvist/Documents/IMG_1159.mov").detect("/Users/efraimzetterqvist/Documents", "IMG_1159.mov", 1000, 1005)
+detected_ball=image.detect("/Users/efraimzetterqvist/Documents", "IMG_1159.mov", 1000, 1005)
+        i=range()
 
+        while True:
 
-
-
+            
