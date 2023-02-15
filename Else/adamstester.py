@@ -11,9 +11,9 @@ subPrinted = subPrinted[subPrinted.find("</b>")+4:]
 pixles_on_camera_Rare = float(
     subPrinted[0:subPrinted.find("MP")])*1000000
 
-subPrinted = subPrinted[subPrinted.find(",")+1:]
+subPrinted = subPrinted[subPrinted.find(",")+2:]
 
-camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(" "))]
 
 subPrinted = subPrinted[subPrinted.find(",")+1:]
 
@@ -61,9 +61,9 @@ subPrinted = subPrinted[subPrinted.find("<br/>")+5:]
 pixles_on_camera_Rare = float(
     subPrinted[0:subPrinted.find("MP")])*1000000
 
-subPrinted = subPrinted[subPrinted.find(",")+1:]
+subPrinted = subPrinted[subPrinted.find(",")+2:]
 
-camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(" "))]
 
 subPrinted = subPrinted[subPrinted.find(",")+1:]
 
@@ -79,9 +79,9 @@ subPrinted = subPrinted[subPrinted.find("<br/>")+5:]
 pixles_on_camera_Rare = float(
     subPrinted[0:subPrinted.find("MP")])*1000000
 
-subPrinted = subPrinted[subPrinted.find(",")+1:]
+subPrinted = subPrinted[subPrinted.find(",")+2:]
 
-camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(" "))]
 
 subPrinted = subPrinted[subPrinted.find(",")+1:]
 
@@ -106,9 +106,9 @@ subPrinted = subPrinted[subPrinted.find("<br/>")+5:]
 pixles_on_camera_Rare = float(
     subPrinted[0:subPrinted.find("MP")])*1000000
 
-subPrinted = subPrinted[subPrinted.find(",")+1:]
+subPrinted = subPrinted[subPrinted.find(",")+2:]
 
-camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(" "))]
 
 subPrinted = subPrinted[subPrinted.find(",")+1:]
 
@@ -124,9 +124,9 @@ subPrinted = subPrinted[subPrinted.find("<br/>")+5:]
 pixles_on_camera_Rare = float(
     subPrinted[0:subPrinted.find("MP")])*1000000
 
-subPrinted = subPrinted[subPrinted.find(",")+1:]
+subPrinted = subPrinted[subPrinted.find(",")+2:]
 
-camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(" "))]
 
 subPrinted = subPrinted[subPrinted.find(",")+1:]
 
