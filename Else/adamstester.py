@@ -6,92 +6,133 @@ printed = str(bsObj.prettify)
 subPrinted = printed[printed.find(
     "Rear camera</th>"):printed.find("Connectivity")]
 
+subPrinted = subPrinted[subPrinted.find("</b>")+4:]
 
-pixles_on_camera_Rare_Wide = float(
-    subPrinted[subPrinted.find("MP")-3:subPrinted.find("MP")])*1000000
-camera_aparature_Rare_Wide = subPrinted[(
-    subPrinted.find("MP")+4): (subPrinted.find("MP"))+10]
-short_lens_Rare_Wide = float(
-    subPrinted[subPrinted.find("mm")-3: subPrinted.find("mm")])/1000
-image_sensor_size_Rare_Wide = subPrinted[subPrinted.find(
-    "mm")+4:subPrinted.find("mm")+7]
-pixle_size_Rare_Wide = float(
-    subPrinted[subPrinted.find("µm")-2: subPrinted.find("µm")])/1000000
-pixle_size_Rare_Wide = float(
-    subPrinted[subPrinted.find("µm")-5: subPrinted.find("µm")])/1000000
+pixles_on_camera_Rare = float(
+    subPrinted[0:subPrinted.find("MP")])*1000000
 
-rare_camera_wide_stats = [pixles_on_camera_Rare_Wide, camera_aparature_Rare_Wide,
-                          short_lens_Rare_Wide, image_sensor_size_Rare_Wide, pixle_size_Rare_Wide]
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+short_lens_Rare = float(
+    subPrinted[0: subPrinted.find("mm")])/1000
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+image_sensor_size_Rare = subPrinted[0:subPrinted.find(",")]
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+
+pixle_size_Rare = float(
+    subPrinted[0: subPrinted.find("µm")])/1000000
+
+rare_camera_wide_stats = [pixles_on_camera_Rare, camera_aparature_Rare,
+                          short_lens_Rare, image_sensor_size_Rare, pixle_size_Rare]
 print(rare_camera_wide_stats)
 
-subPrinted = subPrinted[subPrinted.find("<br/>")+3:]
 
-pixles_on_camera_Rare_UltraWide = int(
-    subPrinted[subPrinted.find("MP")-3:subPrinted.find("MP")])*1000000
-camera_aparature_Rare_UltraWide = subPrinted[(
-    subPrinted.find("MP")+4): (subPrinted.find("MP"))+10]
-short_lens_Rare_UltraWide = int(
-    subPrinted[subPrinted.find("mm")-3: subPrinted.find("mm")])/1000
+subPrinted = subPrinted[subPrinted.find("<br/>")+5:]
+
+pixles_on_camera_Rare = float(
+    subPrinted[0:subPrinted.find("MP")])*1000000
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+short_lens_Rare = float(
+    subPrinted[0: subPrinted.find("mm")])/1000
 
 
-rare_camera_ultrawide_stats = [pixles_on_camera_Rare_UltraWide,
-                               camera_aparature_Rare_UltraWide, short_lens_Rare_UltraWide]
+rare_camera_ultrawide_stats = [pixles_on_camera_Rare,
+                               camera_aparature_Rare, short_lens_Rare]
 print(rare_camera_ultrawide_stats)
 
 # Kommer börja test-scrapea här.
 
-subPrinted = subPrinted[subPrinted.find("<br/>")+3:]
+subPrinted = subPrinted[subPrinted.find("<br/>")+5:]
 
-pixles_on_camera_Rare_Macro = int(
-    subPrinted[subPrinted.find("MP")-2:subPrinted.find("MP")])*1000000
-camera_aparature_Rare_Macro = subPrinted[(
-    subPrinted.find("MP")+4): (subPrinted.find("MP"))+10]
-pixle_size_Rare_Macro = float(
-    subPrinted[subPrinted.find("µm")-5: subPrinted.find("µm")-1])/1000000
+pixles_on_camera_Rare = float(
+    subPrinted[0:subPrinted.find("MP")])*1000000
 
-rare_camera_macro_stats = [pixles_on_camera_Rare_Macro,
-                           camera_aparature_Rare_Macro, pixle_size_Rare_Macro]
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+pixle_size_Rare = float(
+    subPrinted[0: subPrinted.find("µm")])/1000000
+
+rare_camera_macro_stats = [pixles_on_camera_Rare,
+                           camera_aparature_Rare, pixle_size_Rare]
 print(rare_camera_macro_stats)
 
-subPrinted = subPrinted[subPrinted.find("<br/>")+3:]
+subPrinted = subPrinted[subPrinted.find("<br/>")+5:]
 
-pixles_on_camera_Rare_Wide_Pro = int(
-    subPrinted[subPrinted.find("MP")-3:subPrinted.find("MP")])*1000000
-camera_aparature_Rare_Wide_Pro = subPrinted[(
-    subPrinted.find("MP")+4): (subPrinted.find("MP"))+10]
-short_lens_Rare_Wide_Pro = int(
-    subPrinted[subPrinted.find("mm")-3: subPrinted.find("mm")])/1000
-image_sensor_size_Rare_Wide_Pro = subPrinted[subPrinted.find(
-    "mm")+4:subPrinted.find("mm")+10]
-pixle_size_Rare_Wide_Pro = float(
-    subPrinted[subPrinted.find("µm")-5: subPrinted.find("µm")])/1000000
+pixles_on_camera_Rare = float(
+    subPrinted[0:subPrinted.find("MP")])*1000000
 
-rare_camera_wide_stats_Pro = [pixles_on_camera_Rare_Wide_Pro, camera_aparature_Rare_Wide_Pro,
-                              short_lens_Rare_Wide_Pro, image_sensor_size_Rare_Wide_Pro, pixle_size_Rare_Wide_Pro]
-print(rare_camera_wide_stats_Pro)
+subPrinted = subPrinted[subPrinted.find(",")+1:]
 
-subPrinted = subPrinted[subPrinted.find("<br/>")+3:]
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
 
-pixles_on_camera_Rare_Telephoto_Pro = int(
-    subPrinted[subPrinted.find("MP")-2:subPrinted.find("MP")])*1000000
-camera_aparature_Rare_Telephoto_Pro = subPrinted[(
-    subPrinted.find("MP")+4): (subPrinted.find("MP"))+10]
-pixle_size_Rare_Telephoto_Pro = float(
-    subPrinted[subPrinted.find("µm")-5: subPrinted.find("µm")-1])/1000000
+subPrinted = subPrinted[subPrinted.find(",")+1:]
 
-rare_camera_Telephoto_stats_Pro = [pixles_on_camera_Rare_Telephoto_Pro,
-                                   camera_aparature_Rare_Telephoto_Pro, pixle_size_Rare_Telephoto_Pro]
-print(rare_camera_Telephoto_stats_Pro)
+short_lens_Rare = float(
+    subPrinted[0: subPrinted.find("mm")])/1000
 
-subPrinted = subPrinted[subPrinted.find("<br/>")+3:]
+subPrinted = subPrinted[subPrinted.find(",")+1:]
 
-pixles_on_camera_Rare_Depth_Pro = int(
-    subPrinted[subPrinted.find("MP")-2:subPrinted.find("MP")])*1000000
-camera_aparature_Rare_Depth_Pro = subPrinted[(
-    subPrinted.find("MP")+4): (subPrinted.find("MP"))+10]
+image_sensor_size_Rare = subPrinted[0:subPrinted.find(",")]
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+
+pixle_size_Rare = float(
+    subPrinted[0: subPrinted.find("µm")])/1000000
+
+rare_camera_wide_stats = [pixles_on_camera_Rare, camera_aparature_Rare,
+                          short_lens_Rare, image_sensor_size_Rare, pixle_size_Rare]
+print(rare_camera_wide_stats)
+
+subPrinted = subPrinted[subPrinted.find("<br/>")+5:]
+pixles_on_camera_Rare = float(
+    subPrinted[0:subPrinted.find("MP")])*1000000
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+pixle_size_Rare = float(
+    subPrinted[0: subPrinted.find("µm")])/1000000
+
+rare_camera_macro_stats = [pixles_on_camera_Rare,
+                           camera_aparature_Rare, pixle_size_Rare]
+print(rare_camera_macro_stats)
+
+subPrinted = subPrinted[subPrinted.find("<br/>")+5:]
+
+pixles_on_camera_Rare = float(
+    subPrinted[0:subPrinted.find("MP")])*1000000
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
+camera_aparature_Rare = subPrinted[0: (subPrinted.find(","))]
+
+subPrinted = subPrinted[subPrinted.find(",")+1:]
+
 
 rare_camera_Depth_stats_Pro = [
-    pixles_on_camera_Rare_Depth_Pro, camera_aparature_Rare_Depth_Pro]
+    pixles_on_camera_Rare, camera_aparature_Rare]
 print(rare_camera_Depth_stats_Pro)
 
 subPrinted = subPrinted[subPrinted.find("Both"):]
