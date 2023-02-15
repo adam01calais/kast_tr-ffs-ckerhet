@@ -44,7 +44,7 @@ class ImageProcessing:
         model = project.version(1).model
 
         for k in range(a,b):
-            prediction = model.predict(path + str(k) + '.jpg')
+            prediction = model.predict(path + "/" + "dodge" + str(k) + '.jpg')
             for result in prediction.json()['predictions']:
                 x.append(result['x'])
                 y.append(result['y'])
@@ -56,7 +56,7 @@ class ImageProcessing:
 
     #def calibrate_cross(self):
 
-image=ImageProcessing("/Users/efraimzetterqvist/Documents/IMG_1159 2.mov", "/Users/efraimzetterqvist/Documents/IMG_1159 2.mov").detect("/Users/efraimzetterqvist/Documents", "IMG_1159 2.mov", 1, 5)
+image=ImageProcessing("/Users/efraimzetterqvist/Documents/IMG_1159.mov", "/Users/efraimzetterqvist/Documents/IMG_1159.mov").detect("/Users/efraimzetterqvist/Documents", "IMG_1159.mov", 1000, 1005)
 
 
 
