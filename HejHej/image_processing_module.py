@@ -26,7 +26,7 @@ class ImageProcessing:
         w = []
         h = []
 
-        video = cv2.VideoCapture(video_path)
+        video = cv2.VideoCapture(video_path + video_name)
 
         i=0
         path = video_path + "/" + folder_name 
