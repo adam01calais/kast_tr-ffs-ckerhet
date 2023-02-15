@@ -3,7 +3,7 @@ import os
 from roboflow import Roboflow
 import shutil
 
-def detect(self, video_path, video_name, a, b):
+def detect(video_path, video_name):
         
         folder_name = "dodge"
         os.mkdir(os.path.join(video_path, folder_name))
@@ -31,7 +31,7 @@ def detect(self, video_path, video_name, a, b):
         project = rf.workspace().project("dodgeball-detection")
         model = project.version(1).model
 
-        for k in range(a,b):
+        for k in range(1,5):
             prediction = model.predict(path + str(k) + '.jpg')
             for result in prediction.json()['predictions']:
                 x.append(result['x'])
@@ -42,4 +42,4 @@ def detect(self, video_path, video_name, a, b):
 
         shutil.rmtree(path)
 
-image=detect(self, video_path, video_name, a, b):
+image=detect("/Users/efraimzetterqvist/Documents", "/IMG_1159 2.mov")

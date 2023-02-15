@@ -4,6 +4,8 @@ import os
 from roboflow import Roboflow
 import shutil
 
+video_name= "IMG_1159 2.mov"
+
 folder_name = "dodge"
 directory_path = "/Users/efraimzetterqvist/Documents"
 os.mkdir(os.path.join(directory_path, folder_name))
@@ -14,10 +16,11 @@ y = []
 w = []
 h = []
 
-video=cv2.VideoCapture("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159 2.mov")
+
+video=cv2.VideoCapture(directory_path+"/"+video_name)
 
 i=0
-path= directory_path + "/" + folder_name # "/Users/efraimzetterqvist/Documents/dodge"
+path= directory_path + "/" + folder_name
 while(video.isOpened()):
     ret, frame = video.read()
     if ret == False:
@@ -32,7 +35,7 @@ project = rf.workspace().project("dodgeball-detection")
 model = project.version(1).model
 
 for k in range(1,5):
-    prediction = model.predict("/Users/efraimzetterqvist/Documents/dodge/dodge" + str(k) + '.jpg')
+    prediction = model.predict(path+"/dodge" + str(k) + '.jpg')
     for result in prediction.json()['predictions']:
         x.append(result['x'])
         y.append(result['y'])
