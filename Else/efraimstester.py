@@ -3,6 +3,12 @@ import cv2
 import os
 from roboflow import Roboflow
 
+folder_name = "dodge"
+directory_path = "/Users/efraimzetterqvist/Documents/dodge"
+os.mkdir(os.path.join(directory_path, folder_name))
+print(f"Created folder {folder_name} in directory {directory_path}")
+
+
 x = []
 y = []
 w = []
