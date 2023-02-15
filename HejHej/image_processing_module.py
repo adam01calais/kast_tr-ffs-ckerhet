@@ -26,7 +26,7 @@ class ImageProcessing:
         w = []
         h = []
 
-        video = cv2.VideoCapture(video_path + video_name)
+        video = cv2.VideoCapture(video_path + "/" + video_name)
 
         i=0
         path = video_path + "/" + folder_name 
@@ -56,7 +56,7 @@ class ImageProcessing:
 
     #def calibrate_cross(self):
 
-image=ImageProcessing("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159 2.mov", "/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/IMG_1159 2.mov").detect("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers", "/IMG_1159.mov", 1, 5)
+image=ImageProcessing("/Users/efraimzetterqvist/Documents/IMG_1159 2.mov", "/Users/efraimzetterqvist/Documents/IMG_1159 2.mov").detect("/Users/efraimzetterqvist/Documents", "IMG_1159 2.mov", 1, 5)
 
 
 
