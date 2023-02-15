@@ -60,7 +60,6 @@ class ImageProcessing:
                 h.append(result['height'])
         print(x, y, w, h)
 
-<<<<<<< HEAD
         shutil.rmtree(path)       
     
     def calibrate_cross(self):
@@ -68,13 +67,6 @@ class ImageProcessing:
         cross_position_y=[]
         frames_per_second='webscraping'
         
-=======
-        shutil.rmtree(path)
-
-    #def calibrate_cross(self):
-
-image=ImageProcessing("/Users/efraimzetterqvist/Documents/IMG_1159 2.mov", "/Users/efraimzetterqvist/Documents/IMG_1159 2.mov").detect("/Users/efraimzetterqvist/Documents", "IMG_1159 2.mov", 1, 5)
->>>>>>> ab475a4c176c2564a742aa7be74a82d0133f4189
 
 
 
