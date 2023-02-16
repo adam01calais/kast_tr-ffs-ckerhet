@@ -61,8 +61,10 @@ class ImageProcessing:
         cross_position_x=[]
         cross_position_y=[]
         video = cv2.VideoCapture(directory_path + "/" + video_name)
-        frames_per_second = video.get(cv2.CAP_PROP_FPS)
-        print("Frame rate: ", fps)
+        frame_rate = video.get(cv2.CAP_PROP_FPS)
+        frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+        frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        print("Frame rate: ", frame_rate, "Frame width: ", frame_width, "Frame_height: ", frame_height)
         video.release()
         i=range()
         while True:
