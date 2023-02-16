@@ -6,12 +6,12 @@ import shutil
 class ImageProcessing:
 
     def __init__(self, video_floor, video_side):
-        self.video1 = cv2.VideoCapture(video_floor)
-        self.video2 = cv2.VideoCapture(video_side)
-        self.cross_position_x_1=[]
-        self.cross_position_y_1=[]
-        self.cross_position_x_2=[]
-        self.cross_position_y_2=[]
+        self.video_floor = cv2.VideoCapture(video_floor)
+        self.video_side = cv2.VideoCapture(video_side)
+        self.cross_position_x_floor=[]
+        self.cross_position_y_floor=[]
+        self.cross_position_x_side=[]
+        self.cross_position_y_side=[]
         self.dodgeball_position_x=[]
         self.dodgeball_position_y=[]
 
