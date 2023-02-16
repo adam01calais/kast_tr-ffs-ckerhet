@@ -57,10 +57,13 @@ class ImageProcessing:
 
         shutil.rmtree(path)       
     
-    def calibrate_cross(self):
+    def calibrate_cross(self, directory_path, video_name):
         cross_position_x=[]
         cross_position_y=[]
-        frames_per_second='webscraping'
+        video = cv2.VideoCapture(directory_path + "/" + video_name)
+        frames_per_second = video.get(cv2.CAP_PROP_FPS)
+        print("Frame rate: ", fps)
+        video.release()
         i=range()
         while True:
 
