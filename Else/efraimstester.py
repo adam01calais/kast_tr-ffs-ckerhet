@@ -122,7 +122,7 @@ class ImageProcessing:
         shutil.rmtree(self.directory_path + '/' + self.folder_name)  
 
         # Skriver ut kryssets koordinater samt returnerar dem
-        print('Bollens positioner i x: ' x, 'Bollens position i y: ' y)  
+        print('Bollens positioner i x: ' + x, 'Bollens position i y: ' + y)  
         return x, y 
 
             
