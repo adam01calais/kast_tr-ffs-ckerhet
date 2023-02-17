@@ -43,7 +43,7 @@ class ImageProcessing:
         project = rf.workspace().project("dodgeball-detection")
         model = project.version(1).model
 
-        list_of_images_numbers = list(range(1, frame_rate*3*5, frame_rate*3))
+        list_of_images_numbers = list(range(1, frame_rate*100, frame_rate))
 
         x = []
         y = []
@@ -58,18 +58,24 @@ class ImageProcessing:
                 w.append(result['width'])
                 h.append(result['height'])
             print(k, x, y)
-            if len(x) and len(y) <= 1:
+            if len(x) < 2:
+                print('x för liten')
+                continue
+            if len(y) < 2:
+                print('y för liten')
                 continue
             if max(abs(x[-2] - x[-1]), abs(y[-2] - y[-1])) < 4:
                 print('calibration_coordinates: ', x, y)
-                print('Calibration for' + camera_angle + 'camera done successfully')
+                print('Calibration for ' + camera_angle + ' camera done successfully')
                 break
         self.cross_position_x = x[-1]
         self.cross_position_y = y[-1]
 
         shutil.rmtree(self.directory_path + '/' + self.folder_name)  
-        print(self.cross_position_x, self.cross_position_y)     
+        print(self.cross_position_x, self.cross_position_y)  
+        return self.cross_position_x, self.cross_position_y   
 
             
 image=ImageProcessing("/Users/efraimzetterqvist/Documents") 
-image.calibrate_cross("/Users/efraimzetterqvist/Documents/IMG_1179.mov", 'side')
+cross_floor=image.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1160.mov', 'floor')
+cross_side=image.calibrate_cross("/Users/efraimzetterqvist/Documents/IMG_1179.mov", 'side')
