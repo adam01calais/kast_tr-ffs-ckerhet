@@ -1,4 +1,2 @@
-i=range(1,100,4)
+x=[1,3,5]
 
-for a in i:
-    print(a)
