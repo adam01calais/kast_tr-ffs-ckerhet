@@ -1,9 +1,15 @@
-print("hej, detta är bara ett test. Jag vill få in ett arbetsflow i Git haha")
+a=3
+b=1
 
-print("hej")
 
-nummer1 = 10
-nummer2 = 2
-print(nummer1*nummer2)
+while True:
+    lista=list(range(a,30))
+    b+=1
+    for k in lista:
+        print(k)
+    if b<5:
+        a+=1
+    else:
+        break
+        
 
-p
