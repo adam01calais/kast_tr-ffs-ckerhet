@@ -24,5 +24,6 @@ while True:
 out.release()       
 cap.release()
 cv2.destroyAllWindows()
+print(hej)
 
         
