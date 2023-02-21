@@ -124,7 +124,7 @@ class ImageProcessing:
         # Skriver ut bollens koordinater i varje frame fram tills att den träffar väggen
         # och returnerar dem i en lista för x och en för y. Den frame då bollen först kommer in i bild 
         # ger det första elementet i listan och därmed är den sista framen det sista elementet i listan.
-        print('Bollens positioner i x: ' + str(x), 'Bollens position i y: ' + str(y))  
+        print('Bollens position i x: ' + str(x), 'Bollens position i y: ' + str(y))  
         return x, y 
 
 object=ImageProcessing('/Users/efraimzetterqvist/Documents')
