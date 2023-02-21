@@ -1,31 +1,27 @@
-import cv2
-import time
-import datetime
+import numpy as np
 
-cap = cv2.VideoCapture(0)
+class DataAnalyzis:
 
-frame_size = (int(cap.get(3)), int(cap.get(4)))
-fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-current_time = datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S")
-out = cv2.VideoWriter(f"{current_time}.mp4", fourcc, 30.0, frame_size)
-frame_rate = int(cap.get(cv2.CAP_PROP_FPS))
-print(frame_rate)
+    def __init__(self, x_floor, y_floor, x_side, y_side, frame_rate_floor, frame_rate_side):
+        self.frame_rate_floor=frame_rate_floor
+        self.frame_rate_side = frame_rate_side
+        self.x_floor = x_floor
+        self.y_floor = y_floor
+        self.x_side = x_side
+        self.y_side = y_side
 
-
-while True: 
-        _, frame = cap.read()
-
-        out.write(frame)
-
-        cv2.imshow("Camera", frame)
-
-        if cv2.waitKey(1) == ord('q'):
-             break
+    def velocity(self):
         
-        
-out.release()       
-cap.release()
-cv2.destroyAllWindows()
 
 
-        
+    def accuracy(self, cross_position_floor_x, cross_position_floor_y, cross_position_side_x, cross_position_side_y):
+        # Här behöver vi konvertera pixlar till cm
+        converter = 1
+        cross_coord_x = cross_position_floor_y
+        cross_coord_y = cross_position_side_y
+        x_coord = self.y_floor[-1]
+        y_coord = self.y_side[-1]
+        diff_x = cross_coord_x-x_coord
+        diff_y = cross_coord_y-y_coord
+        diff_tot = np.sqrt(diff_x**2 + diff_y**2)
+

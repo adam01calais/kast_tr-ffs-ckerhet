@@ -34,8 +34,8 @@ class ImageProcessing:
         cv2.destroyAllWindows()
 
         # Tillkallar en i Roboflow tränad modell för att detektera fotbollar
-        rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq")
-        project = rf.workspace().project("dodgeball-detection")
+        rf = Roboflow(api_key="koGvCT0SUYgs5aM6SvHp")
+        project = rf.workspace().project("dodgeball-detection-pcb7n")
         model = project.version(1).model
 
         # Gör en lista över de frames där detektering av dodgeball är aktuell för kalibrering
@@ -95,8 +95,8 @@ class ImageProcessing:
         cv2.destroyAllWindows()
 
         # Tillkallar en i Roboflow tränad modell för att detektera fotbollar
-        rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq")
-        project = rf.workspace().project("dodgeball-detection")
+        rf = Roboflow(api_key="koGvCT0SUYgs5aM6SvHp")
+        project = rf.workspace().project("dodgeball-detection-pcb7n")
         model = project.version(1).model
 
         # Skapar listor för bildens x- & y-koordinat
@@ -115,7 +115,7 @@ class ImageProcessing:
             if len(y) < 2:
                 continue
             if x[-1] > x[-2]:
-                print('Throw for ' + camera_angle + ' successfully measured')
+                print('Throw for ' + camera_angle + ' camera successfully measured')
                 break
 
         # Raderar mappen 'dodge' innehållandes alla frames
@@ -124,5 +124,11 @@ class ImageProcessing:
         # Skriver ut bollens koordinater i varje frame fram tills att den träffar väggen
         # och returnerar dem i en lista för x och en för y. Den frame då bollen först kommer in i bild 
         # ger det första elementet i listan och därmed är den sista framen det sista elementet i listan.
-        print('Bollens positioner i x: ' + x, 'Bollens position i y: ' + y)  
+        print('Bollens positioner i x: ' + str(x), 'Bollens position i y: ' + str(y))  
         return x, y 
+
+object=ImageProcessing('/Users/efraimzetterqvist/Documents')
+#floor_calibration=object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1159.mov', 'floor')
+#side_calibration=object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1160.mov', 'side')
+floor_meas=object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1165.mov', 'floor')
+
