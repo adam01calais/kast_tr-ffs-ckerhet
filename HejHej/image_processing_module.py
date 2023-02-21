@@ -121,6 +121,8 @@ class ImageProcessing:
         # Raderar mappen 'dodge' innehållandes alla frames
         shutil.rmtree(self.directory_path + '/' + self.folder_name)  
 
-        # Skriver ut kryssets koordinater samt returnerar dem
+        # Skriver ut bollens koordinater i varje frame fram tills att den träffar väggen
+        # och returnerar dem i en lista för x och en för y. Den frame då bollen först kommer in i bild 
+        # ger det första elementet i listan och därmed är den sista framen det sista elementet i listan.
         print('Bollens positioner i x: ' + x, 'Bollens position i y: ' + y)  
         return x, y 
