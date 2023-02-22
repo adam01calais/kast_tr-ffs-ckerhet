@@ -23,9 +23,7 @@ class DataAnalysis:
         # error_x = self.dodgeball_position_x[-1] - cross_position_x
         # error_y = self.dodgeball_position_y[-1] - cross_position_y
         #  return error_x, error_y
-        x = cross_position_x - self.dodgeball_position_x
-        y = cross_position_y - self.dodgeball_position_y
-        x = math.pow(x, 2)
-        y = math.pow(y, 2) 
-        accuracy = math.sqrt(x + y)
+        x = cross_position_x - self.dodgeball_position_x[-1]
+        y = cross_position_y - self.dodgeball_position_y[-1]
+        accuracy = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
         return accuracy
