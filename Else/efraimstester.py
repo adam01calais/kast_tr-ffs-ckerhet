@@ -4,6 +4,7 @@ class DataAnalyzis:
 
     def __init__(self, x_floor, y_floor, x_side, y_side, frame_rate):
         self.frame_rate=frame_rate
+        # Här behöver vi konvertera pixlar till cm
         self.converter = 1
         self.x_floor = x_floor
         self.y_floor = y_floor
@@ -20,9 +21,6 @@ class DataAnalyzis:
         print('Hasitgheten för bollen var: ' + str(mean_velocity) + 'km/h')
         return mean_velocity
 
-
-
-
     def accuracy(self, cross_position_floor_x, cross_position_floor_y, cross_position_side_x, cross_position_side_y):
         # Här behöver vi konvertera pixlar till cm
         cross_coord_x = cross_position_floor_y
@@ -32,4 +30,6 @@ class DataAnalyzis:
         diff_x = cross_coord_x-x_coord
         diff_y = cross_coord_y-y_coord
         diff_tot = np.sqrt(diff_x**2 + diff_y**2)
+        print('Bollens avstånd från målet: ' + str(diff_tot) + 'cm')
+        return diff_tot
 
