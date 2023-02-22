@@ -127,8 +127,4 @@ class ImageProcessing:
         print('Bollens position i x: ' + str(x), 'Bollens position i y: ' + str(y))  
         return x, y 
 
-object=ImageProcessing('/Users/efraimzetterqvist/Documents')
-#floor_calibration=object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1159.mov', 'floor')
-#side_calibration=object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_4556.mov', 'side')
-floor_meas=object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_4557.mov', 'side')
 
