@@ -17,13 +17,10 @@ class DataAnalysis:
         return velocity1[0], velocity2[0]
         
     # Får in x- och y-koordinat när bollen hamnade (cross_position x och y)
-    def calculate_accuracy(self, cross_position_x, cross_position_y):
-        # error_x och error_y är avståndet från träffpunkten i antalet pixlar
+    def calculate_accuracy(self, cross_position_x, cross_position_y, pixel_size):
         # Behöver konverteras till cm (kanske?) eller annan längdenhet
-        # error_x = self.dodgeball_position_x[-1] - cross_position_x
-        # error_y = self.dodgeball_position_y[-1] - cross_position_y
         #  return error_x, error_y
-        x = cross_position_x - self.dodgeball_position_x[-1]
+        x = cross_position_x - self.dodgeball_position_x[-1] # sista elementet
         y = cross_position_y - self.dodgeball_position_y[-1]
         accuracy = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
-        return accuracy
+        return (accuracy*pixel_size)
