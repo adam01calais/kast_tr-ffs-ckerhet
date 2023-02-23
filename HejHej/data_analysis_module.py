@@ -5,16 +5,16 @@ import math
 class DataAnalysis:
     # Input: bollens poition för kamera 1 och 2
     def __init__(self, dodgeball_position_x, dodgeball_position_y, dodgeball_diameter, 
-        image_width_x, image_width_y, distance_camera_x, distance_camera_y, focal_length_x, focal_length_y):
+        image_width_x_camera, image_width_y_camera, distance_camera_x, distance_camera_y, focal_length_x, focal_length_y):
         self.dodgeball_position_x = dodgeball_position_x
         self.dodgeball_position_y = dodgeball_position_y
-        self.dodgeball_diameter = dodgeball_diameter
-        self.image_width_x = image_width_x      # width of the video frame in pixels
-        self.image_width_y = image_width_y      # width of the video frame in pixels
-        self.distance_camera_x = distance_camera_x
+        self.dodgeball_diameter = dodgeball_diameter                          # bollens diameter, kan hårdkodas sen
+        self.image_width_x_camera = image_width_x_camera                      # width of the video frame in pixels
+        self.image_width_y_camera = image_width_y_camera                      # width of the video frame in pixels
+        self.distance_camera_x = distance_camera_x                            # avstånd från kamera till kryss (om man kanske håller bollen vid krysset först)
         self.distance_camera_y = distance_camera_y
-        self.focal_length_x = focal_length_x    # distance between the lens and the image sensor in meters camera x
-        self.focal_length_y = focal_length_y    # distance between the lens and the image sensor in meters camera y
+        self.focal_length_x = focal_length_x                                  # distance between the lens and the image sensor in meters camera x
+        self.focal_length_y = focal_length_y                                  # distance between the lens and the image sensor in meters camera y
 
 
     # Curve fitting is a type of optimization that finds an optimal set of parameters for a defined function that best fits a given set of observations.
@@ -36,13 +36,13 @@ class DataAnalysis:
         # pixels_per_meter = video_frame_width / field_of_view_width_in_meters
         # Measure the distance between the camera and the object in meters
 
-        pixel_size_x = (self.dodgeball_diameter / self.image_width_x) * (self.distance_camera_x * self.focal_length_x)
-        pixel_size_y = (self.dodgeball_diameter / self.image_width_y) * (self.distance_camera_y * self.focal_length_y)
+        pixel_size_x = (self.dodgeball_diameter / self.image_width_x_camera) * (self.distance_camera_x * self.focal_length_x)
+        pixel_size_y = (self.dodgeball_diameter / self.image_width_y_camera) * (self.distance_camera_y * self.focal_length_y)
        
         x = x_error_pixels * pixel_size_x
         y = y_error_pixels * pixel_size_y
        
         accuracy = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
-        
+
         return (accuracy)
     
