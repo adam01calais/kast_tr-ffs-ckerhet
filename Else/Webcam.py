@@ -4,7 +4,8 @@ import datetime
 
 cap = cv2.VideoCapture(0)
 
-path="C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/Webcamtest"
+path="C:/Users/gabri/Videos/Webcamtest"
+#path="C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/Webcamtest"
 
 frame_size = (int(cap.get(3)), int(cap.get(4)))
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
