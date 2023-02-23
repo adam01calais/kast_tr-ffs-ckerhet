@@ -4,9 +4,12 @@ import math
 
 class DataAnalysis:
     # Input: bollens poition för kamera 1 och 2
-    def __init__(self, dodgeball_position_x, dodgeball_position_y):
+    def __init__(self, dodgeball_position_x, dodgeball_position_y, dodgeball_diameter, field_of_view_width_in_meters_x, field_of_view_width_in_meters_y):
         self.dodgeball_position_x = dodgeball_position_x
         self.dodgeball_position_y = dodgeball_position_y
+        self.dodgeball_diameter = dodgeball_diameter
+        self.field_of_view_width_in_meters_x = field_of_view_width_in_meters_x
+        self.field_of_view_width_in_meters_y = field_of_view_width_in_meters_y
 
     # Curve fitting is a type of optimization that finds an optimal set of parameters for a defined function that best fits a given set of observations.
    # Får in en lista med positioner där bollen har varit varje frame/second, en lista för x och en för y
@@ -17,10 +20,19 @@ class DataAnalysis:
         return velocity1[0], velocity2[0]
         
     # Får in x- och y-koordinat när bollen hamnade (cross_position x och y)
-    def calculate_accuracy(self, cross_position_x, cross_position_y, pixel_size):
-        # Behöver konverteras till cm (kanske?) eller annan längdenhet
-        #  return error_x, error_y
-        x = cross_position_x - self.dodgeball_position_x[-1] # sista elementet
-        y = cross_position_y - self.dodgeball_position_y[-1]
+    def calculate_accuracy(self, cross_position_x, cross_position_y):
+        # Hur fel bollen hamnade i x- och y-led mätt i pixlar
+        x_error = cross_position_x - self.dodgeball_position_x[-1] # sista elementet
+        y_error = cross_position_y - self.dodgeball_position_y[-1]
+       
+        x = 1
+        y = 2 # test
+       
         accuracy = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
-        return (accuracy*pixel_size)
+        
+        # Behöver konverteras till cm (kanske?) eller annan längdenhet
+        # pixels_per_meter = video_frame_width / field_of_view_width_in_meters
+        # Measure the distance between the camera and the object in meters
+
+
+        return (accuracy)
