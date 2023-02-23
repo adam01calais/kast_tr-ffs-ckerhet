@@ -87,7 +87,8 @@ class ImageProcessing:
             ret, frame = video.read()
             if ret == False:
                 break
-            cv2.imwrite(os.path.join(path,'dodge'+str(i)+'.jpg'),frame)
+            noise_canceled_frame = cv2.bilateralFilter(frame, 5, 50, 50)
+            cv2.imwrite(os.path.join(path,'dodge'+str(i)+'.jpg'),noise_canceled_frame)
             i+=1
 
         # Stänger ner videon
@@ -127,8 +128,8 @@ class ImageProcessing:
         print('Bollens position i x: ' + str(x), 'Bollens position i y: ' + str(y))  
         return x, y 
 
-#object=ImageProcessing('/Users/efraimzetterqvist/Documents')
+object=ImageProcessing('/Users/efraimzetterqvist/Documents')
 #floor_calibration=object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1159.mov', 'floor')
 #side_calibration=object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_4556.mov', 'side')
-#floor_meas=object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_4557.mov', 'side')
+floor_meas=object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1161.mov', 'side')
 
