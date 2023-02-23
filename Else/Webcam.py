@@ -2,29 +2,39 @@ import cv2
 import time
 import datetime
 
-cap = cv2.VideoCapture(0)
+cap1 = cv2.VideoCapture(1)
+cap2 = cv2.VideoCapture(0)
 
-path="C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/Webcamtest"
+#Lägg till egen path!!!
 
-frame_size = (int(cap.get(3)), int(cap.get(4)))
+path="C:/Users/gabri/Videos/Webcamtest"
+#path="C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/Webcamtest"
+
+frame_size = (int(cap1.get(3)), int(cap2.get(4)))
+frame_size = (int(cap1.get(3)), int(cap2.get(4)))
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 current_time = datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S-%f")
-out = cv2.VideoWriter(path+"/"+current_time+".mp4", fourcc, 30.0, frame_size)
-
+out1 = cv2.VideoWriter(path+"/"+current_time+"+v1"+".mp4", fourcc, 30.0, frame_size)
+out2 = cv2.VideoWriter(path+"/"+current_time+"+v2"+".mp4", fourcc, 30.0, frame_size)
 
 while True: 
-        _, frame = cap.read()
+        _, frame1 = cap1.read()
+        _, frame2 = cap2.read()
 
-        out.write(frame)
+        out1.write(frame1)
+        out2.write(frame2)
 
-        cv2.imshow("Camera", frame)
+        cv2.imshow("Camera1", frame1)
+        cv2.imshow("Camera2", frame2)
 
         if cv2.waitKey(1) == ord('q'):
              break
         
         
-out.release()       
-cap.release()
+out1.release()   
+out2.release()    
+cap1.release()
+cap2.release()
 cv2.destroyAllWindows()
 
 
