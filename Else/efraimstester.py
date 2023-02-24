@@ -1,135 +1,95 @@
 import cv2
-import os
-from roboflow import Roboflow
-import shutil
+import numpy as np
 
-class ImageProcessing:
+# Open the video file for reading
+cap = cv2.VideoCapture('/Users/efraimzetterqvist/Documents/IMG_4557.mov')
 
-    def __init__(self, directory_path):
-        self.directory_path = directory_path
-        self.folder_name = "dodge"
-    
-    def calibrate_cross(self, video_path, camera_angle):
+# Define the parameters for Lucas-Kanade optical flow
+lk_params = dict(winSize=(15, 15),
+                 maxLevel=2,
+                 criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
+                 flags=cv2.OPTFLOW_LK_GET_MIN_EIGENVALS)
 
-        # Skapar den tomma mappen 'dodge' på plats vald av användaren
-        os.mkdir(os.path.join(self.directory_path, self.folder_name))
-        print(f"Created folder {self.folder_name} in directory {self.directory_path}")
+# Take the first frame of the video
+ret, old_frame = cap.read()
 
-        # Öppnar kalibreringsvideon
-        video = cv2.VideoCapture(video_path)
+# Convert the first frame to grayscale
+old_gray = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
 
-        # Delar upp videon i frames som placeras i mappen 'dodge'
-        i=0
-        path = self.directory_path + "/" + self.folder_name
-        while(video.isOpened()):
-            ret, frame = video.read()
-            if ret == False:
-                break
-            cv2.imwrite(os.path.join(path,'dodge'+str(i)+'.jpg'),frame)
-            i+=1
-        frame_rate = int(video.get(cv2.CAP_PROP_FPS))
+# Define the region of interest (ROI) where you want to track the optical flow
+# You can modify these values depending on your use case
+x, y, w, h = 300, 350,700, 500
 
-        # Stänger ner videon
-        video.release()
-        cv2.destroyAllWindows()
+# Create a mask to visualize the ROI
+mask = np.zeros_like(old_frame)
+cv2.rectangle(mask, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-        # Tillkallar en i Roboflow tränad modell för att detektera fotbollar
-        rf = Roboflow(api_key="koGvCT0SUYgs5aM6SvHp")
-        project = rf.workspace().project("dodgeball-detection-pcb7n")
-        model = project.version(1).model
+# Display the mask and first frame side by side
+cv2.imshow('ROI Mask', mask)
+cv2.imshow('First Frame', old_frame)
 
-        # Gör en lista över de frames där detektering av dodgeball är aktuell för kalibrering
-        list_of_images_numbers = list(range(1, i, frame_rate))
+# Define the initial points to track
+p0 = cv2.goodFeaturesToTrack(old_gray, maxCorners=50, qualityLevel=0.01, minDistance=10, blockSize=7)
 
-        # Skapar listor för bildens x- & y-koordinat
-        x = []
-        y = []
+# Create a color map for visualizing the optical flow
+color_map = np.random.randint(0, 255, (50, 3))
 
-        # Detekterar bollen för de aktuella framesen och stoppar kalibreringen då 
-        # då bollen varit relativt stilla mellan två aktuella frames (1 sekund)
-        for k in list_of_images_numbers:
-            prediction = model.predict(self.directory_path + "/" + self.folder_name + "/dodge" + str(k) + '.jpg')
-            for result in prediction.json()['predictions']:
-                x.append(result['x'])
-                y.append(result['y'])
-            if len(x) < 2:
-                continue
-            if len(y) < 2:
-                continue
-            if max(abs(x[-2] - x[-1]), abs(y[-2] - y[-1])) < 3:
-                print('Calibration for ' + camera_angle + ' camera done successfully')
-                break
+# Initialize the variables for tracking speed and direction
+speed = []
+direction = []
+
+# Start the loop to read each frame and track the optical flow
+while True:
+    ret, frame = cap.read()
+
+    if not ret:
+        break
+
+    # Convert the current frame to grayscale
+    frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+    # Calculate the optical flow using Lucas-Kanade method
+    p1, st, err = cv2.calcOpticalFlowPyrLK(old_gray, frame_gray, p0, None, **lk_params)
+
+    # Select only the points that were successfully tracked
+    good_new = p1[st == 1]
+    good_old = p0[st == 1]
+
+    # Draw the optical flow vectors
+    for i, (new, old) in enumerate(zip(good_new, good_old)):
+        a, b = new.ravel().astype(int)
+        c, d = old.ravel().astype(int)
+        mask = cv2.line(mask, (a, b), (c, d), color_map[i].tolist(), 1)
+        frame = cv2.circle(frame, (a, b), 3, color_map[i].tolist(), -1)
         
-        # Sparar kryssets x- & y-koordinat i två variabler 
-        cross_position_x = x[-1]
-        cross_position_y = y[-1]
+        a, b = new.ravel().astype(float)
+        c, d = old.ravel().astype(float)
 
-        # Raderar mappen 'dodge' innehållandes alla frames
-        shutil.rmtree(self.directory_path + '/' + self.folder_name)  
+        # Compute the magnitude and angle of the optical flow vectors
+        magnitude, angle = cv2.cartToPolar(np.array([a]) - np.array([c]), np.array([b]) - np.array([d]))
+        
 
-        # Skriver ut kryssets koordinater samt returnerar dem
-        print('x: ' + str(cross_position_x), 'y: ' + str(cross_position_y))  
-        return cross_position_x, cross_position_y   
+        # Convert the angle to degrees
+        angle = np.rad2deg(angle)
 
-    def measure_throw(self, video_path, camera_angle):
+        # Compute the speed and direction of the optical flow vectors
+        speed.append(magnitude)
+        direction.append(angle)
 
-        # Skapar den tomma mappen 'dodge' på plats vald av användaren
-        os.mkdir(os.path.join(self.directory_path, self.folder_name))
-        print(f"Created folder {self.folder_name} in directory {self.directory_path}")
+    # Show the optical flow vectors on the current frame
+    img = cv2.add(frame, mask)
+    cv2.imshow('Optical Flow Vectors', img)
 
-        # Öppnar kastvideon
-        video = cv2.VideoCapture(video_path)
+    # Update the variables for the next iteration
+    old_gray = frame_gray.copy()
+    p0 = good_new.reshape(-1, 1, 2)
 
-        # Delar upp videon i frames som placeras i mappen 'dodge'
-        i=0
-        path = self.directory_path + "/" + self.folder_name
-        while(video.isOpened()):
-            ret, frame = video.read()
-            if ret == False:
-                break
-            noise_canceled_frame = cv2.bilateralFilter(frame, 5, 50, 50)
-            cv2.imwrite(os.path.join(path,'dodge'+str(i)+'.jpg'),noise_canceled_frame)
-            i+=1
+    # Exit the loop if the user presses the '
+    if cv2.waitKey(1) == ord('q'):
+        break
 
-        # Stänger ner videon
-        video.release()
-        cv2.destroyAllWindows()
-
-        # Tillkallar en i Roboflow tränad modell för att detektera fotbollar
-        rf = Roboflow(api_key="koGvCT0SUYgs5aM6SvHp")
-        project = rf.workspace().project("dodgeball-detection-pcb7n")
-        model = project.version(1).model
-
-        # Skapar listor för bildens x- & y-koordinat
-        x = []
-        y = []
-
-        for k in range(1,i):
-            prediction = model.predict(self.directory_path + "/" + self.folder_name + "/dodge" + str(k) + '.jpg')
-            for result in prediction.json()['predictions']:
-                x.append(result['x'])
-                y.append(result['y'])
-            print(x, y)
-            k+=1
-            if len(x) < 2:
-                continue
-            if len(y) < 2:
-                continue
-            if x[-1] > x[-2]:
-                print('Throw for ' + camera_angle + ' camera successfully measured')
-                break
-
-        # Raderar mappen 'dodge' innehållandes alla frames
-        shutil.rmtree(self.directory_path + '/' + self.folder_name)  
-
-        # Skriver ut bollens koordinater i varje frame fram tills att den träffar väggen
-        # och returnerar dem i en lista för x och en för y. Den frame då bollen först kommer in i bild 
-        # ger det första elementet i listan och därmed är den sista framen det sista elementet i listan.
-        print('Bollens position i x: ' + str(x), 'Bollens position i y: ' + str(y))  
-        return x, y 
-
-object=ImageProcessing('/Users/efraimzetterqvist/Documents')
-#floor_calibration=object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1159.mov', 'floor')
-#side_calibration=object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_4556.mov', 'side')
-floor_meas=object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1161.mov', 'side')
-
+# Release video capture and close all windows
+cap.release()
+cv2.destroyAllWindows()
+print(speed)
+#print(direction)
