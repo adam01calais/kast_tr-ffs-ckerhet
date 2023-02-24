@@ -1,20 +1,13 @@
 from arrays import Phone_Camera
+from math import sqrt
 
-onePlus8 = Phone_Camera("https://en.wikipedia.org/wiki/OnePlus_8")
-print(onePlus8.megaPixels)
-print(onePlus8.apperature)
-print(onePlus8.image_center_size_)
-print(onePlus8.pixel_size_)
+general_phone_thickness = 8.91/1000
+k = 100000000
 
-iPhoneX = Phone_Camera("https://en.wikipedia.org/wiki/IPhone_X")
-print(iPhoneX.megaPixels)
-print(iPhoneX.apperature)
-print(iPhoneX.image_center_size_)
-print(iPhoneX.pixel_size_)
 
-#Deapth of field = 2* Focus distance^(2) * apperaure * Confusion/(focal length^(2))
-#1/focal length = 1/Focus distance + 1/Phone_thickness
-#focal length = Phone_thickness * Focus distance/(Phone_thickness + Focus distance)
-#Confusion = focal length^(2)/ (apperature *(Focus distance - focal length))
-#Deapth of field = 2* Focus distance^(2) *  apperaure * ((Phone_thickness * Focus distance/(Phone_thickness + Focus distance))^(2)/ (apperature *(Focus distance - (Phone_thickness * Focus distance/(Phone_thickness + Focus distance)))))/((Phone_thickness * Focus distance/(Phone_thickness + Focus distance)^(2)))
-
+OnePlus8 = Phone_Camera("https://en.wikipedia.org/wiki/OnePlus_8")
+term1 = (-k*(OnePlus8.apperature) + 2*(OnePlus8.megaPixels)
+         * general_phone_thickness)/(4*OnePlus8.megaPixels)
+term2 = k*OnePlus8.apperature*general_phone_thickness/OnePlus8.megaPixels
+distance = -term1 + sqrt(term2 + term1*term1)
+print(distance)
