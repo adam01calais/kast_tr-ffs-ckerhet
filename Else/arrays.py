@@ -1,11 +1,25 @@
 from indeapth import func
 
 
-class phone_camera():
-    list = func("https://en.wikipedia.org/wiki/OnePlus_8")
-    megaPixles = list[0]
-    apperature = list[1]
-    image_center_size = list[2]
-    pixle_size = list[3]
+class Phone_Camera:
+    list = None
+    megaPixels = None
+    apperature = None
+    image_center_size_ = None
+    pixel_size_ = None
 
-onePlus8 = phone_camera()
+    def __init__(self, URL):
+        self.list = func(URL)
+        self.megaPixels = self.list[0]
+        self.apperature = self.list[1]
+        try:
+            self.image_center_size_ = self.list[2]
+            self.pixel_size_ = self.list[3]
+        except IndexError:
+            self.image_center_size_ = None
+            self.pixel_size_ = None
+
+
+
+
+
