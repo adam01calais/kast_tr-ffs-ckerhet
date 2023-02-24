@@ -3,9 +3,10 @@ import time
 import datetime
 
 cap1 = cv2.VideoCapture(1)
-cap2 = cv2.VideoCapture(0)
+cap2 = cv2.VideoCapture(2)
 
 #Lägg till egen path!!!
+
 path="C:/Users/gabri/Videos/Webcamtest"
 #path="C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/Webcamtest"
 
