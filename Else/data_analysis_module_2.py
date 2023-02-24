@@ -5,7 +5,7 @@ class DataAnalyzis:
     def __init__(self, x_floor, y_floor, x_side, y_side, frame_rate):
         self.frame_rate=frame_rate
         # Här behöver vi konvertera pixlar till cm
-        self.converter = 1
+        self.converter = 0.05
         self.x_floor = x_floor
         self.y_floor = y_floor
         self.x_side = x_side
