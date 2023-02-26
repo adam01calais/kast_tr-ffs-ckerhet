@@ -91,11 +91,16 @@ class ImageProcessing:
         w_list = []
         h_list = []
 
+        count = 0
+
+        radius = float(10)
+
         while(video.isOpened()):
             ret, frame = video.read()
             if ret == False:
                 break
             # Convert the current frame to grayscale
+            count += 1
             frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
             # Subtract the background from the current frame
@@ -121,21 +126,29 @@ class ImageProcessing:
                 if area > min_ball_area:
                     # Draw a bounding box around the ball
                     x, y, w, h = cv2.boundingRect(contour)
-                    x_list.append(x+w/2)
-                    y_list.append(y+h/2)
+                    print(type(x))
+                    center_x = x + w/2
+                    center_y = y + h/2
+                    x_list.append(center_x)
+                    y_list.append(center_y)
                     w_list.append(w)
                     h_list.append(h)
-                    cv2.rectangle(frame, (x, y), (x + w_list[-1], y + h_list[-1]), (0, 0, 255), 2)
-                else:
-
+                    box_left_corner_x = center_x - radius
+                    print(type(box_left_corner_x))
+                    box_left_corner_y = center_y + radius
+                    box_right_corner_x = center_x + radius
+                    box_right_corner_y = center_y - radius
+                    cv2.rectangle(frame, (box_left_corner_x, box_left_corner_y), (box_right_corner_x, box_right_corner_y), (0, 0, 255), 2)
+                    break
+            
+            # Display the current frame
+            cv2.imshow('frame', frame)
+            if camera_angle == 'side':
+                if len(x_list) < count:
                     x_list.append(0)
                     y_list.append(0)
                     w_list.append(0)
                     h_list.append(0)
-
-            # Display the current frame
-            cv2.imshow('frame', frame)
-            if camera_angle == 'side':
                 if len(x_list) < 2:
                     continue
             
@@ -148,12 +161,20 @@ class ImageProcessing:
                         del w_list[-1:]
                         del h_list[-1:]
                         break
+                
             if camera_angle == 'floor':
+
+                if len(y_list) < count:
+                    x_list.append(0)
+                    y_list.append(0)
+                    w_list.append(0)
+                    h_list.append(0)
+
                 if len(y_list) < 2:
                     continue
             
                 if y_list[-1] > y_list[-2]:
-                    if y_list[-1] == 0:
+                    if y_list[-2] == 0:
                         continue
                     else:
                         del x_list[-1:]
@@ -184,7 +205,8 @@ class ImageProcessing:
 
 
 object = ImageProcessing('/Users/efraimzetterqvist/Documents')
+
+throw_floor_x, throw_floor_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1165.mov', 15000, 'floor')
 throw_side_x, throw_side_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1161.mov', 6000, 'side')
-throw_floor_x, throw_floor_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1165.mov', 20000, 'floor')
 throw = DataAnalyzis(throw_floor_x, throw_floor_y, throw_side_x, throw_side_y, fps_side)
 throw_velocity = throw.velocity()
