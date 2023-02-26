@@ -93,7 +93,7 @@ class ImageProcessing:
 
         count = 0
 
-        radius = float(10)
+        radius = int(80)
 
         while(video.isOpened()):
             ret, frame = video.read()
@@ -126,18 +126,16 @@ class ImageProcessing:
                 if area > min_ball_area:
                     # Draw a bounding box around the ball
                     x, y, w, h = cv2.boundingRect(contour)
-                    print(type(x))
                     center_x = x + w/2
                     center_y = y + h/2
                     x_list.append(center_x)
                     y_list.append(center_y)
                     w_list.append(w)
                     h_list.append(h)
-                    box_left_corner_x = center_x - radius
-                    print(type(box_left_corner_x))
-                    box_left_corner_y = center_y + radius
-                    box_right_corner_x = center_x + radius
-                    box_right_corner_y = center_y - radius
+                    box_left_corner_x = int(center_x - radius)
+                    box_left_corner_y = int(center_y + radius)
+                    box_right_corner_x = int(center_x + radius)
+                    box_right_corner_y = int(center_y - radius)
                     cv2.rectangle(frame, (box_left_corner_x, box_left_corner_y), (box_right_corner_x, box_right_corner_y), (0, 0, 255), 2)
                     break
             
@@ -184,7 +182,7 @@ class ImageProcessing:
                         break
 
             # Check for key press
-            key = cv2.waitKey(1000)
+            key = cv2.waitKey(100)
             if key == ord('q'):
                 break
 
@@ -192,15 +190,16 @@ class ImageProcessing:
         video.release()
         cv2.destroyAllWindows() 
 
-        print(x_list)
-        print(y_list)
-        print(w_list)
-        print(h_list)
+        # print(x_list)
+        # print(y_list)
+        # print(w_list)
+        # print(h_list)
 
         # Skriver ut bollens koordinater i varje frame fram tills att den träffar väggen
         # och returnerar dem i en lista för x och en för y. Den frame då bollen först kommer in i bild 
         # ger det första elementet i listan och därmed är den sista framen det sista elementet i listan.
-        print('Bollens position i x: ' + str(x_list), 'Bollens position i y: ' + str(y_list))  
+        print('Bollens position i för ' + camera_angle + ' camera i x-led: ' + str(x_list))
+        print('Bollens position för ' + camera_angle + ' camera i y-led: ' + str(y_list))  
         return x_list, y_list, fps
 
 
