@@ -12,13 +12,11 @@ class DataAnalyzis:
         self.y_side = y_side
 
     def velocity(self):
+        
         velocity = []
         diff = len(self.x_side) - len(self.y_floor)
         
-        #print(self.y_floor)
-        #if self.x_side[diff] == 0 or self.y_floor[0] == 0 or self.y_side[diff] == 0:
         del self.x_side[0:diff]
-            #del self.y_floor[0]
         del self.y_side[0:diff]
         del self.x_side[-1]
         del self.y_floor[-1]
@@ -27,10 +25,7 @@ class DataAnalyzis:
             del self.x_side[0]
             del self.y_floor[0]
             del self.y_side[0]
-
-
-        #print(self.y_floor)
-        for k in range(0,len(self.y_floor)):
+        for k in range(1,len(self.y_floor)):
             
             if self.x_side[k] == 0: 
                 self.x_side[k] = (self.x_side[k-1] + self.x_side[k+1])/2
@@ -39,14 +34,8 @@ class DataAnalyzis:
             if self.y_side[k] == 0:
                 self.y_side[k] = (self.y_side[k-1] + self.y_side[k+1])/2
                 
-            else:
-                distance_between_frames = np.sqrt((self.x_side[k]-self.x_side[k-1])**2+(self.y_floor[k]-self.y_floor[k-1])**2+(self.y_side[k]-self.y_side[k-1])**2)
-                print(distance_between_frames)
-                velocity.append(3.6 / 100  * self.converter * distance_between_frames * self.frame_rate)  
-        print(self.x_side)
-        print(self.y_side)
-        print(self.y_floor)
-        print(velocity)
+            distance_between_frames = np.sqrt((self.x_side[k]-self.x_side[k-1])**2+(self.y_floor[k]-self.y_floor[k-1])**2+(self.y_side[k]-self.y_side[k-1])**2)
+            velocity.append(3.6 / 100  * self.converter * distance_between_frames * self.frame_rate)  
         mean_velocity = sum(velocity)/len(velocity)
         print('Hasitgheten för bollen var: ' + str(mean_velocity) + 'km/h')
         return mean_velocity
