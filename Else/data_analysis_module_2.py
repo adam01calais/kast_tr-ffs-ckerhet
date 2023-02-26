@@ -5,7 +5,7 @@ class DataAnalyzis:
     def __init__(self, x_floor, y_floor, x_side, y_side, frame_rate):
         self.frame_rate=frame_rate
         # Här behöver vi konvertera pixlar till cm
-        self.converter = 0.05
+        self.converter = 21.59/130
         self.x_floor = x_floor
         self.y_floor = y_floor
         self.x_side = x_side
@@ -15,8 +15,8 @@ class DataAnalyzis:
         velocity = []
         for k in range(1,len(self.x_floor)-1):
             distance_between_frames = np.sqrt((self.x_side[k+1]-self.x_side[k])**2+(self.y_floor[k+1]-self.y_floor[k])**2+(self.y_side[k+1]-self.y_side[k])**2)
-            time = 1/self.frame_rate
-            velocity.append(3.6 * 100 * self.converter * distance_between_frames/time)  
+            #print(distance_between_frames)
+            velocity.append(3.6 / 100  * self.converter * distance_between_frames * self.frame_rate)  
         mean_velocity = sum(velocity)/len(velocity)
         print('Hasitgheten för bollen var: ' + str(mean_velocity) + 'km/h')
         return mean_velocity

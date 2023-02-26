@@ -121,11 +121,17 @@ class ImageProcessing:
                 if area > min_ball_area:
                     # Draw a bounding box around the ball
                     x, y, w, h = cv2.boundingRect(contour)
-                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-                    x_list.append((x+w)/2)
-                    y_list.append((y+h)/2)
+                    x_list.append(x+w/2)
+                    y_list.append(y+h/2)
                     w_list.append(w)
                     h_list.append(h)
+                    cv2.rectangle(frame, (x, y), (x + w_list[-1], y + h_list[-1]), (0, 0, 255), 2)
+                else:
+
+                    x_list.append(0)
+                    y_list.append(0)
+                    w_list.append(0)
+                    h_list.append(0)
 
             # Display the current frame
             cv2.imshow('frame', frame)
@@ -134,24 +140,30 @@ class ImageProcessing:
                     continue
             
                 if x_list[-1] < x_list[-2]:
-                    del x_list[-1:]
-                    del y_list[-1:]
-                    del w_list[-1:]
-                    del h_list[-1:]
-                    break
+                    if x_list[-1] == 0:
+                        continue
+                    else:
+                        del x_list[-1:]
+                        del y_list[-1:]
+                        del w_list[-1:]
+                        del h_list[-1:]
+                        break
             if camera_angle == 'floor':
                 if len(y_list) < 2:
                     continue
             
                 if y_list[-1] > y_list[-2]:
-                    del x_list[-1:]
-                    del y_list[-1:]
-                    del w_list[-1:]
-                    del h_list[-1:]
-                    break
+                    if y_list[-1] == 0:
+                        continue
+                    else:
+                        del x_list[-1:]
+                        del y_list[-1:]
+                        del w_list[-1:]
+                        del h_list[-1:]
+                        break
 
             # Check for key press
-            key = cv2.waitKey(1)
+            key = cv2.waitKey(1000)
             if key == ord('q'):
                 break
 
@@ -159,10 +171,10 @@ class ImageProcessing:
         video.release()
         cv2.destroyAllWindows() 
 
-        # print(x_list)
-        # print(y_list)
-        # print(w_list)
-        # print(h_list)
+        print(x_list)
+        print(y_list)
+        print(w_list)
+        print(h_list)
 
         # Skriver ut bollens koordinater i varje frame fram tills att den träffar väggen
         # och returnerar dem i en lista för x och en för y. Den frame då bollen först kommer in i bild 
