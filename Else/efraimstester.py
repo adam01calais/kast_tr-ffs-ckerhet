@@ -45,6 +45,8 @@ class ImageProcessing:
         # Skapar listor för bildens x- & y-koordinat
         x = []
         y = []
+        w = []
+        h = []
 
         # Detekterar bollen för de aktuella framesen och stoppar kalibreringen då 
         # då bollen varit relativt stilla mellan två aktuella frames (1 sekund)
@@ -53,6 +55,8 @@ class ImageProcessing:
             for result in prediction.json()['predictions']:
                 x.append(result['x'])
                 y.append(result['y'])
+                w.append(result['width'])
+                h.append(result['height'])
             if len(x) < 2:
                 continue
             if len(y) < 2:
@@ -64,13 +68,15 @@ class ImageProcessing:
         # Sparar kryssets x- & y-koordinat i två variabler 
         cross_position_x = x[-1]
         cross_position_y = y[-1]
+        self.ball_radius = (w[-1] + h[-1])/4
 
         # Raderar mappen 'dodge' innehållandes alla frames
         shutil.rmtree(self.directory_path + '/' + self.folder_name)  
 
         # Skriver ut kryssets koordinater samt returnerar dem
         print('x: ' + str(cross_position_x), 'y: ' + str(cross_position_y))  
-        return cross_position_x, cross_position_y   
+        print('Bollens radie för ' + camera_angle + ' camera: ' + str(self.ball_radius))
+        return cross_position_x, cross_position_y, self.ball_radius
 
     def measure_throw(self, video_path, min_ball_area, camera_angle):
 
@@ -93,7 +99,7 @@ class ImageProcessing:
 
         count = 0
 
-        radius = int(80)
+        radius = int(self.ball_radius)
 
         while(video.isOpened()):
             ret, frame = video.read()
@@ -198,14 +204,17 @@ class ImageProcessing:
         # Skriver ut bollens koordinater i varje frame fram tills att den träffar väggen
         # och returnerar dem i en lista för x och en för y. Den frame då bollen först kommer in i bild 
         # ger det första elementet i listan och därmed är den sista framen det sista elementet i listan.
-        print('Bollens position i för ' + camera_angle + ' camera i x-led: ' + str(x_list))
+        print('Bollens position för ' + camera_angle + ' camera i x-led: ' + str(x_list))
         print('Bollens position för ' + camera_angle + ' camera i y-led: ' + str(y_list))  
         return x_list, y_list, fps
 
 
 object = ImageProcessing('/Users/efraimzetterqvist/Documents')
 
-throw_floor_x, throw_floor_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1165.mov', 15000, 'floor')
-throw_side_x, throw_side_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1161.mov', 6000, 'side')
-throw = DataAnalyzis(throw_floor_x, throw_floor_y, throw_side_x, throw_side_y, fps_side)
+cal_floor_x, cal_floor_y, ball_radius_floor = object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1160.mov', 'floor')
+cal_side_x, cal_side_y, ball_radius_side = object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1159.mov', 'side')
+throw_floor_x, throw_floor_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1165.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
+throw_side_x, throw_side_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1161.mov', 1/3*(ball_radius_side*2)**2, 'side')
+throw = DataAnalyzis(throw_floor_x, throw_floor_y, throw_side_x, throw_side_y, fps_side, ball_radius_floor, ball_radius_side)
 throw_velocity = throw.velocity()
+throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)

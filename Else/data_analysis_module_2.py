@@ -2,17 +2,17 @@ import numpy as np
 
 class DataAnalyzis:
 
-    def __init__(self, x_floor, y_floor, x_side, y_side, frame_rate):
+    def __init__(self, x_floor, y_floor, x_side, y_side, frame_rate, ball_radius_floor, ball_radius_side):
         self.frame_rate=frame_rate
         # Här behöver vi konvertera pixlar till cm
-        self.converter = 17.78/80
+        self.converter = 17.78/(ball_radius_floor+ball_radius_side)
         self.x_floor = x_floor
         self.y_floor = y_floor
         self.x_side = x_side
         self.y_side = y_side
 
     def velocity(self):
-        
+
         velocity = []
         diff = len(self.x_side) - len(self.y_floor)
         
@@ -44,10 +44,10 @@ class DataAnalyzis:
         # Här behöver vi konvertera pixlar till cm
         cross_coord_x = cross_position_floor_y
         cross_coord_y = cross_position_side_y
-        x_coord = self.y_floor[-1]
+        x_coord = self.x_floor[-1]
         y_coord = self.y_side[-1]
         diff_x = cross_coord_x-x_coord
         diff_y = cross_coord_y-y_coord
-        diff_tot = np.sqrt(diff_x**2 + diff_y**2)
+        diff_tot = self.converter * np.sqrt(diff_x**2 + diff_y**2)
         print('Bollens avstånd från målet: ' + str(diff_tot) + 'cm')
         return diff_x, diff_y, diff_tot
