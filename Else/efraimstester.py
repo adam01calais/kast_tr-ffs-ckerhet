@@ -1,95 +1,220 @@
 import cv2
-import numpy as np
+import os
+from roboflow import Roboflow
+import shutil
+from data_analysis_module_2 import DataAnalyzis 
 
-# Open the video file for reading
-cap = cv2.VideoCapture('/Users/efraimzetterqvist/Documents/IMG_4557.mov')
+class ImageProcessing:
 
-# Define the parameters for Lucas-Kanade optical flow
-lk_params = dict(winSize=(15, 15),
-                 maxLevel=2,
-                 criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03),
-                 flags=cv2.OPTFLOW_LK_GET_MIN_EIGENVALS)
+    def __init__(self, directory_path):
+        self.directory_path = directory_path
+        self.folder_name = "dodge"
+    
+    def calibrate_cross(self, video_path, camera_angle):
 
-# Take the first frame of the video
-ret, old_frame = cap.read()
+        # Skapar den tomma mappen 'dodge' på plats vald av användaren
+        os.mkdir(os.path.join(self.directory_path, self.folder_name))
+        print(f"Created folder {self.folder_name} in directory {self.directory_path}")
 
-# Convert the first frame to grayscale
-old_gray = cv2.cvtColor(old_frame, cv2.COLOR_BGR2GRAY)
+        # Öppnar kalibreringsvideon
+        video = cv2.VideoCapture(video_path)
 
-# Define the region of interest (ROI) where you want to track the optical flow
-# You can modify these values depending on your use case
-x, y, w, h = 300, 350,700, 500
+        # Delar upp videon i frames som placeras i mappen 'dodge'
+        i=0
+        path = self.directory_path + "/" + self.folder_name
+        while(video.isOpened()):
+            ret, frame = video.read()
+            if ret == False:
+                break
+            cv2.imwrite(os.path.join(path,'dodge'+str(i)+'.jpg'),frame)
+            i+=1
+        frame_rate = int(video.get(cv2.CAP_PROP_FPS))
 
-# Create a mask to visualize the ROI
-mask = np.zeros_like(old_frame)
-cv2.rectangle(mask, (x, y), (x + w, y + h), (0, 255, 0), 2)
+        # Stänger ner videon
+        video.release()
+        cv2.destroyAllWindows()
 
-# Display the mask and first frame side by side
-cv2.imshow('ROI Mask', mask)
-cv2.imshow('First Frame', old_frame)
+        # Tillkallar en i Roboflow tränad modell för att detektera fotbollar
+        rf = Roboflow(api_key="koGvCT0SUYgs5aM6SvHp")
+        project = rf.workspace().project("dodgeball-detection-pcb7n")
+        model = project.version(1).model
 
-# Define the initial points to track
-p0 = cv2.goodFeaturesToTrack(old_gray, maxCorners=50, qualityLevel=0.01, minDistance=10, blockSize=7)
+        # Gör en lista över de frames där detektering av dodgeball är aktuell för kalibrering
+        list_of_images_numbers = list(range(1, i, frame_rate))
 
-# Create a color map for visualizing the optical flow
-color_map = np.random.randint(0, 255, (50, 3))
+        # Skapar listor för bildens x- & y-koordinat
+        x = []
+        y = []
+        w = []
+        h = []
 
-# Initialize the variables for tracking speed and direction
-speed = []
-direction = []
-
-# Start the loop to read each frame and track the optical flow
-while True:
-    ret, frame = cap.read()
-
-    if not ret:
-        break
-
-    # Convert the current frame to grayscale
-    frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    # Calculate the optical flow using Lucas-Kanade method
-    p1, st, err = cv2.calcOpticalFlowPyrLK(old_gray, frame_gray, p0, None, **lk_params)
-
-    # Select only the points that were successfully tracked
-    good_new = p1[st == 1]
-    good_old = p0[st == 1]
-
-    # Draw the optical flow vectors
-    for i, (new, old) in enumerate(zip(good_new, good_old)):
-        a, b = new.ravel().astype(int)
-        c, d = old.ravel().astype(int)
-        mask = cv2.line(mask, (a, b), (c, d), color_map[i].tolist(), 1)
-        frame = cv2.circle(frame, (a, b), 3, color_map[i].tolist(), -1)
+        # Detekterar bollen för de aktuella framesen och stoppar kalibreringen då 
+        # då bollen varit relativt stilla mellan två aktuella frames (1 sekund)
+        for k in list_of_images_numbers:
+            prediction = model.predict(self.directory_path + "/" + self.folder_name + "/dodge" + str(k) + '.jpg')
+            for result in prediction.json()['predictions']:
+                x.append(result['x'])
+                y.append(result['y'])
+                w.append(result['width'])
+                h.append(result['height'])
+            if len(x) < 2:
+                continue
+            if len(y) < 2:
+                continue
+            if max(abs(x[-2] - x[-1]), abs(y[-2] - y[-1])) < 3:
+                print('Calibration for ' + camera_angle + ' camera done successfully')
+                break
         
-        a, b = new.ravel().astype(float)
-        c, d = old.ravel().astype(float)
+        # Sparar kryssets x- & y-koordinat i två variabler 
+        cross_position_x = x[-1]
+        cross_position_y = y[-1]
+        self.ball_radius = (w[-1] + h[-1])/4
 
-        # Compute the magnitude and angle of the optical flow vectors
-        magnitude, angle = cv2.cartToPolar(np.array([a]) - np.array([c]), np.array([b]) - np.array([d]))
-        
+        # Raderar mappen 'dodge' innehållandes alla frames
+        shutil.rmtree(self.directory_path + '/' + self.folder_name)  
 
-        # Convert the angle to degrees
-        angle = np.rad2deg(angle)
+        # Skriver ut kryssets koordinater samt returnerar dem
+        print('x: ' + str(cross_position_x), 'y: ' + str(cross_position_y))  
+        print('Bollens radie för ' + camera_angle + ' camera: ' + str(self.ball_radius))
+        return cross_position_x, cross_position_y, self.ball_radius
 
-        # Compute the speed and direction of the optical flow vectors
-        speed.append(magnitude)
-        direction.append(angle)
+    def measure_throw(self, video_path, min_ball_area, camera_angle):
 
-    # Show the optical flow vectors on the current frame
-    img = cv2.add(frame, mask)
-    cv2.imshow('Optical Flow Vectors', img)
+        # Öppnar kastvideon
+        video = cv2.VideoCapture(video_path)
+        fps = int(video.get(cv2.CAP_PROP_FPS))
 
-    # Update the variables for the next iteration
-    old_gray = frame_gray.copy()
-    p0 = good_new.reshape(-1, 1, 2)
+        # Extract the first frame as the background image
+        _, bg = video.read()
+        bg_gray = cv2.cvtColor(bg, cv2.COLOR_BGR2GRAY)
 
-    # Exit the loop if the user presses the '
-    if cv2.waitKey(1) == ord('q'):
-        break
+        # Define the threshold for detecting the ball
+        threshold = 6
 
-# Release video capture and close all windows
-cap.release()
-cv2.destroyAllWindows()
-print(speed)
-#print(direction)
+        # Skapar listor för bildens x- & y-koordinat
+        x_list = []
+        y_list = []
+        w_list = []
+        h_list = []
+
+        count = 0
+
+        radius = int(self.ball_radius)
+
+        while(video.isOpened()):
+            ret, frame = video.read()
+            if ret == False:
+                break
+            # Convert the current frame to grayscale
+            count += 1
+            frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+            # Subtract the background from the current frame
+            diff = cv2.absdiff(bg_gray, frame_gray)
+
+            # Apply a threshold to the difference image
+            _, thresh = cv2.threshold(diff, threshold, 255, cv2.THRESH_BINARY)
+
+            # Apply morphological operations to remove noise
+            kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+            thresh = cv2.erode(thresh, kernel, iterations=2)
+            thresh = cv2.dilate(thresh, kernel, iterations=2)
+
+            # Find contours in the binary image
+            contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+            # Loop through the contours
+            for contour in contours:
+                # Calculate the area of the contour
+                area = cv2.contourArea(contour)
+
+                # If the area is larger than the minimum area, it is likely a ball
+                if area > min_ball_area:
+                    # Draw a bounding box around the ball
+                    x, y, w, h = cv2.boundingRect(contour)
+                    center_x = x + w/2
+                    center_y = y + h/2
+                    x_list.append(center_x)
+                    y_list.append(center_y)
+                    w_list.append(w)
+                    h_list.append(h)
+                    box_left_corner_x = int(center_x - radius)
+                    box_left_corner_y = int(center_y + radius)
+                    box_right_corner_x = int(center_x + radius)
+                    box_right_corner_y = int(center_y - radius)
+                    cv2.rectangle(frame, (box_left_corner_x, box_left_corner_y), (box_right_corner_x, box_right_corner_y), (0, 0, 255), 2)
+                    break
+            
+            # Display the current frame
+            cv2.imshow('frame', frame)
+            if camera_angle == 'side':
+                if len(x_list) < count:
+                    x_list.append(0)
+                    y_list.append(0)
+                    w_list.append(0)
+                    h_list.append(0)
+                if len(x_list) < 2:
+                    continue
+            
+                if x_list[-1] < x_list[-2]:
+                    if x_list[-1] == 0:
+                        continue
+                    else:
+                        del x_list[-1:]
+                        del y_list[-1:]
+                        del w_list[-1:]
+                        del h_list[-1:]
+                        break
+                
+            if camera_angle == 'floor':
+
+                if len(y_list) < count:
+                    x_list.append(0)
+                    y_list.append(0)
+                    w_list.append(0)
+                    h_list.append(0)
+
+                if len(y_list) < 2:
+                    continue
+            
+                if y_list[-1] > y_list[-2]:
+                    if y_list[-2] == 0:
+                        continue
+                    else:
+                        del x_list[-1:]
+                        del y_list[-1:]
+                        del w_list[-1:]
+                        del h_list[-1:]
+                        break
+
+            # Check for key press
+            key = cv2.waitKey(100)
+            if key == ord('q'):
+                break
+
+        # Stänger ner videon
+        video.release()
+        cv2.destroyAllWindows() 
+
+        # print(x_list)
+        # print(y_list)
+        # print(w_list)
+        # print(h_list)
+
+        # Skriver ut bollens koordinater i varje frame fram tills att den träffar väggen
+        # och returnerar dem i en lista för x och en för y. Den frame då bollen först kommer in i bild 
+        # ger det första elementet i listan och därmed är den sista framen det sista elementet i listan.
+        print('Bollens position för ' + camera_angle + ' camera i x-led: ' + str(x_list))
+        print('Bollens position för ' + camera_angle + ' camera i y-led: ' + str(y_list))  
+        return x_list, y_list, fps
+
+
+object = ImageProcessing('/Users/efraimzetterqvist/Documents')
+
+cal_floor_x, cal_floor_y, ball_radius_floor = object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1160.mov', 'floor')
+cal_side_x, cal_side_y, ball_radius_side = object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1159.mov', 'side')
+throw_floor_x, throw_floor_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1165.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
+throw_side_x, throw_side_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1161.mov', 1/3*(ball_radius_side*2)**2, 'side')
+throw = DataAnalyzis(throw_floor_x, throw_floor_y, throw_side_x, throw_side_y, fps_side, ball_radius_floor, ball_radius_side)
+throw_velocity = throw.velocity()
+throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)

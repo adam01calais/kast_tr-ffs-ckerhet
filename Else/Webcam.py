@@ -7,8 +7,8 @@ cap2 = cv2.VideoCapture(2)
 
 #Lägg till egen path!!!
 
-#path="C:/Users/gabri/Videos/Webcamtest"
-path="C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/Webcamtest"
+path="C:/Users/gabri/Videos/Webcamtest"
+#path="C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/Webcamtest"
 
 frame_size = (int(cap1.get(3)), int(cap2.get(4)))
 frame_size = (int(cap1.get(3)), int(cap2.get(4)))
