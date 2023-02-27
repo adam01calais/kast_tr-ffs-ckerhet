@@ -14,8 +14,8 @@ frame_size = (int(cap1.get(3)), int(cap2.get(4)))
 frame_size = (int(cap1.get(3)), int(cap2.get(4)))
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 current_time = datetime.datetime.now().strftime("%d-%m-%Y-%H-%M-%S-%f")
-out1 = cv2.VideoWriter(path+"/"+current_time+"+v1"+".mp4", fourcc, 30.0, frame_size)
-out2 = cv2.VideoWriter(path+"/"+current_time+"+v2"+".mp4", fourcc, 30.0, frame_size)
+out1 = cv2.VideoWriter(path+"/"+current_time+"+v1"+".mp4", fourcc, 120, frame_size)
+out2 = cv2.VideoWriter(path+"/"+current_time+"+v2"+".mp4", fourcc, 240, frame_size)
 
 while True: 
         _, frame1 = cap1.read()
