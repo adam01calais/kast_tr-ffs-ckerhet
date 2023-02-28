@@ -1,7 +1,7 @@
 import cv2
 
 # Load the image
-img = cv2.imread("C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/dodgeball_red1")
+img = cv2.imread("C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/dodgeball_red1.jpg")
 
 # Display the image and wait for a mouse click
 cv2.imshow("Image", img)
