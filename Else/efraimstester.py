@@ -35,9 +35,9 @@ class ImageProcessing:
         cv2.destroyAllWindows()
 
         # Tillkallar en i Roboflow tränad modell för att detektera fotbollar
-        rf = Roboflow(api_key="koGvCT0SUYgs5aM6SvHp")
-        project = rf.workspace().project("dodgeball-detection-pcb7n")
-        model = project.version(1).model
+        rf = Roboflow(api_key="HEfNlI5lkTBazBknN8jz")
+        project = rf.workspace().project("footballs-1trlz")
+        model = project.version(3).model
 
         # Gör en lista över de frames där detektering av dodgeball är aktuell för kalibrering
         list_of_images_numbers = list(range(1, i, frame_rate))
@@ -89,7 +89,7 @@ class ImageProcessing:
         bg_gray = cv2.cvtColor(bg, cv2.COLOR_BGR2GRAY)
 
         # Define the threshold for detecting the ball
-        threshold = 6
+        threshold = 8
 
         # Skapar listor för bildens x- & y-koordinat
         x_list = []
@@ -188,7 +188,7 @@ class ImageProcessing:
                         break
 
             # Check for key press
-            key = cv2.waitKey(100)
+            key = cv2.waitKey(1)
             if key == ord('q'):
                 break
 
@@ -211,10 +211,35 @@ class ImageProcessing:
 
 object = ImageProcessing('/Users/efraimzetterqvist/Documents')
 
-cal_floor_x, cal_floor_y, ball_radius_floor = object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1160.mov', 'floor')
-cal_side_x, cal_side_y, ball_radius_side = object.calibrate_cross('/Users/efraimzetterqvist/Documents/IMG_1159.mov', 'side')
-throw_floor_x, throw_floor_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1165.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
-throw_side_x, throw_side_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/IMG_1161.mov', 1/3*(ball_radius_side*2)**2, 'side')
-throw = DataAnalyzis(throw_floor_x, throw_floor_y, throw_side_x, throw_side_y, fps_side, ball_radius_floor, ball_radius_side)
+cal_side_x, cal_side_y, ball_radius_side = object.calibrate_cross('/Users/efraimzetterqvist/Documents/kal_side2.mov', 'side')
+cal_floor_x, cal_floor_y, ball_radius_floor = object.calibrate_cross('/Users/efraimzetterqvist/Documents/kal_floor3.mov', 'floor')
+
+throw_floor_Axel_x, throw_floor_Axel_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Axel_floor.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
+throw_side_Axel_x, throw_side_Axel_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Axel_side.mov', 1/3*(ball_radius_side*2)**2, 'side')
+throw = DataAnalyzis(throw_floor_Axel_x, throw_floor_Axel_y, throw_side_Axel_x, throw_side_Axel_y, 240, ball_radius_floor, ball_radius_side)
+throw_velocity = throw.velocity()
+throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
+
+throw_floor_Johanna_x, throw_floor_Johanna_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Johanna_floor.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
+throw_side_Johanna_x, throw_side_Johanna_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Johanna_side.mov', 1/3*(ball_radius_side*2)**2, 'side')
+throw = DataAnalyzis(throw_floor_Johanna_x, throw_floor_Johanna_y, throw_side_Johanna_x, throw_side_Johanna_y, 240, ball_radius_floor, ball_radius_side)
+throw_velocity = throw.velocity()
+throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
+
+throw_floor_Simon_x, throw_floor_Simon_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Simon_floor.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
+throw_side_Simon_x, throw_side_Simon_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Simon_side.mov', 1/3*(ball_radius_side*2)**2, 'side')
+throw = DataAnalyzis(throw_floor_Simon_x, throw_floor_Simon_y, throw_side_Simon_x, throw_side_Simon_y, 240, ball_radius_floor, ball_radius_side)
+throw_velocity = throw.velocity()
+throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
+
+throw_floor_Efraim_x, throw_floor_Efraim_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Efraim_floor.mov', 1/2*(ball_radius_floor*2)**2, 'floor')
+throw_side_Efraim_x, throw_side_Efraim_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Efraim_side.mov', 1/2*(ball_radius_side*2)**2, 'side')
+throw = DataAnalyzis(throw_floor_Efraim_x, throw_floor_Efraim_y, throw_side_Efraim_x, throw_side_Efraim_y, 240, ball_radius_floor, ball_radius_side)
+throw_velocity = throw.velocity()
+throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
+
+throw_floor_Adam_x, throw_floor_Adam_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Adam_floor.mov', 1/2*(ball_radius_floor*2)**2, 'floor')
+throw_side_Adam_x, throw_side_Adam_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Adam_side.mov', 1/2*(ball_radius_side*2)**2, 'side')
+throw = DataAnalyzis(throw_floor_Adam_x, throw_floor_Adam_y, throw_side_Adam_x, throw_side_Adam_y, 240, ball_radius_floor, ball_radius_side)
 throw_velocity = throw.velocity()
 throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
