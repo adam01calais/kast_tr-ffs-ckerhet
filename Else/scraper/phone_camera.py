@@ -1,4 +1,4 @@
-from indeapth import func
+from webscraped import func
 
 
 class Phone_Camera:
@@ -18,8 +18,3 @@ class Phone_Camera:
         except IndexError:
             self.image_center_size_ = None
             self.pixel_size_ = None
-
-
-
-
-

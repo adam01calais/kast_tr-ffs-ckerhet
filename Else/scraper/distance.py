@@ -1,9 +1,8 @@
-from arrays import Phone_Camera
+from phone_camera import Phone_Camera
 from math import sqrt
 
 general_phone_thickness = 8.91/1000
-k = 100000000
-
+k = 10000000
 
 OnePlus8 = Phone_Camera("https://en.wikipedia.org/wiki/OnePlus_8")
 term1 = (-k*(OnePlus8.apperature) + 2*(OnePlus8.megaPixels)
