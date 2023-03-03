@@ -3,12 +3,59 @@ import os
 from roboflow import Roboflow
 import shutil
 from data_analysis_module_2 import DataAnalyzis 
+import numpy as np
 
 class ImageProcessing:
 
     def __init__(self, directory_path):
         self.directory_path = directory_path
         self.folder_name = "dodge" 
+        # self.ball_radius = 40.5
+        # self.cal_center_x = 0
+        # self.cal_center_y = 0
+        # self.edge_x = 0
+        # self.edge_y = 0
+
+    # def calibrate_cross(self, image_path, camera_angle):
+        
+    #     count = 0
+    #     def mouse_callback(event, x, y, flags, param):
+    #         nonlocal count
+    #         if event == cv2.EVENT_LBUTTONDOWN:
+    #             if count == 0:
+    #                 count += 1
+    #                 self.cal_center_x = x
+    #                 self.cal_center_y = y
+    #                 print("Ball center at x =", x, ", y =", y)
+    #                 cv2.destroyAllWindows()
+    #             elif count == 1:
+    #                 self.edge_x = x
+    #                 self.edge_y = y
+    #                 cv2.destroyAllWindows()
+                    
+                
+    #     img = cv2.imread(image_path)
+
+    #     cv2.imshow('image', img)
+    #     cv2.setWindowTitle('image', 'Click on the center of the ball')
+    #     cv2.setMouseCallback("image", mouse_callback)
+    #     cv2.waitKey(0)
+        
+    #     cv2.imshow('image', img)
+    #     cv2.setWindowTitle('image', 'Click on the edge of the ball')
+    #     cv2.setMouseCallback("image", mouse_callback)
+    #     cv2.waitKey(0)
+        
+
+    #     self.ball_radius = int(np.sqrt((self.cal_center_x - self.edge_x)**2 + (self.cal_center_y - self.edge_y)**2))
+
+    #     cross_position_x, cross_position_y = self.cal_center_x, self.cal_center_y
+
+    #     print(f'x: {cross_position_x}, y: {cross_position_y}')
+    #     print(f'Ball radius for {camera_angle} camera: {self.ball_radius}')
+
+    #     return cross_position_x, cross_position_y, self.ball_radius
+
     
     def calibrate_cross(self, video_path, camera_angle):
 
@@ -300,3 +347,20 @@ throw = DataAnalyzis(throw_floor_Adam_x, throw_floor_Adam_y, throw_side_Adam_x, 
 print('Adams kast:')
 throw_velocity = throw.velocity()
 throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
+
+# cal_side_x, cal_side_y, ball_radius_side = object.calibrate_cross('/Users/efraimzetterqvist/Documents/Cal_data_side.mov', 'side')
+# cal_floor_x, cal_floor_y, ball_radius_floor = object.calibrate_cross('/Users/efraimzetterqvist/Documents/Cal_data_floor2.mov', 'floor')
+# cal_side_y = 941
+# cal_side_x = 947
+# cal_floor_x = 993
+# cal_floor_y = 819
+# ball_radius_floor = 37.5
+# ball_radius_side = 37.5
+
+# throw_floor_data_x, throw_floor_data_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Cal_data_floor3.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
+# throw_side_data_x, throw_side_data_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Cal_data_side2.mov', 1/3*(ball_radius_side*2)**2, 'side')
+# throw = DataAnalyzis(throw_floor_data_x, throw_floor_data_y, throw_side_data_x, throw_side_data_y, 240, ball_radius_floor, ball_radius_side)
+# print('Stefans kast:')
+# throw_velocity = throw.velocity()
+# throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
+

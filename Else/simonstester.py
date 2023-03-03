@@ -1,11 +1,7 @@
 import cv2
 
 # Load the image
-<<<<<<< Updated upstream
 img = cv2.imread("C:/Users/Joakim/Documents/3an/Kandidatarbete/Egen programmering/dodgeball_red1.jpg")
-=======
-img = cv2.imread("/Users/efraimzetterqvist/Library/Mobile Documents/com~apple~CloudDocs/Chalmers/haarpositiv/images-12.jpeg")
->>>>>>> Stashed changes
 
 # Display the image and wait for a mouse click
 cv2.imshow("Image", img)
