@@ -5,8 +5,7 @@ class DataAnalyzis:
     def __init__(self, x_floor, y_floor, x_side, y_side, frame_rate, ball_radius_floor, ball_radius_side):
 
         self.frame_rate=frame_rate
-        #self.converter = 17.78/(ball_radius_floor+ball_radius_side)
-        self.converter = 6.2/(ball_radius_floor+ball_radius_side)
+        self.converter = 17.78/(ball_radius_floor+ball_radius_side)
         self.x_floor = x_floor
         self.y_floor = y_floor
         self.x_side = x_side
@@ -14,8 +13,11 @@ class DataAnalyzis:
 
     def velocity(self):
 
+        # Skapar en lista för hastigheten
         velocity = []
         
+        # Tar bort alla värden för bilder då en boll ej var detekterad, 
+        # fram tills första detekterade bollen
         for element in self.x_floor[:]:
             if int(element) == 0:
                 self.x_floor.remove(element) 
