@@ -204,8 +204,6 @@ class ImageProcessing:
                     cv2.rectangle(frame, (box_left_corner_x, box_left_corner_y), (box_right_corner_x, box_right_corner_y), (0, 0, 255), 2)
                     break
             
-            # Display the current frame
-            cv2.imshow('frame', frame)
             if camera_angle == 'side':
                 if landscape == True:
                     if len(x_list) < count:
@@ -284,6 +282,9 @@ class ImageProcessing:
                             del w_list[-1:]
                             del h_list[-1:]
                             break
+                # Display the current frame
+            if x_list[-1] != 0:
+                cv2.imshow('frame', frame)
 
 
             # Check for key press
@@ -313,38 +314,38 @@ object = ImageProcessing('/Users/efraimzetterqvist/Documents')
 cal_side_x, cal_side_y, ball_radius_side = object.calibrate_cross('/Users/efraimzetterqvist/Documents/kal_side2.mov', 'side')
 cal_floor_x, cal_floor_y, ball_radius_floor = object.calibrate_cross('/Users/efraimzetterqvist/Documents/kal_floor3.mov', 'floor')
 
+print('Axels kast:')
 throw_floor_Axel_x, throw_floor_Axel_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Axel_floor.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
 throw_side_Axel_x, throw_side_Axel_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Axel_side.mov', 1/3*(ball_radius_side*2)**2, 'side')
 throw = DataAnalyzis(throw_floor_Axel_x, throw_floor_Axel_y, throw_side_Axel_x, throw_side_Axel_y, 240, ball_radius_floor, ball_radius_side)
-print('Axels kast:')
 throw_velocity = throw.velocity()
 throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
 
+print('Johannas kast:')
 throw_floor_Johanna_x, throw_floor_Johanna_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Johanna_floor.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
 throw_side_Johanna_x, throw_side_Johanna_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Johanna_side.mov', 1/3*(ball_radius_side*2)**2, 'side')
 throw = DataAnalyzis(throw_floor_Johanna_x, throw_floor_Johanna_y, throw_side_Johanna_x, throw_side_Johanna_y, 240, ball_radius_floor, ball_radius_side)
-print('Johannas kast:')
 throw_velocity = throw.velocity()
 throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
 
+print('Simons kast:')
 throw_floor_Simon_x, throw_floor_Simon_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Simon_floor.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
 throw_side_Simon_x, throw_side_Simon_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Simon_side.mov', 1/3*(ball_radius_side*2)**2, 'side')
 throw = DataAnalyzis(throw_floor_Simon_x, throw_floor_Simon_y, throw_side_Simon_x, throw_side_Simon_y, 240, ball_radius_floor, ball_radius_side)
-print('Simons kast:')
 throw_velocity = throw.velocity()
 throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
 
+print('Efraims kast:')
 throw_floor_Efraim_x, throw_floor_Efraim_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Efraim_floor.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
 throw_side_Efraim_x, throw_side_Efraim_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Efraim_side.mov', 1/3*(ball_radius_side*2)**2, 'side')
 throw = DataAnalyzis(throw_floor_Efraim_x, throw_floor_Efraim_y, throw_side_Efraim_x, throw_side_Efraim_y, 240, ball_radius_floor, ball_radius_side)
-print('Efraims kast:')
 throw_velocity = throw.velocity()
 throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
 
+print('Adams kast:')
 throw_floor_Adam_x, throw_floor_Adam_y, fps_floor = object.measure_throw('/Users/efraimzetterqvist/Documents/Adam_floor.mov', 1/3*(ball_radius_floor*2)**2, 'floor')
 throw_side_Adam_x, throw_side_Adam_y, fps_side = object.measure_throw('/Users/efraimzetterqvist/Documents/Adam_side.mov', 1/3*(ball_radius_side*2)**2, 'side')
 throw = DataAnalyzis(throw_floor_Adam_x, throw_floor_Adam_y, throw_side_Adam_x, throw_side_Adam_y, 240, ball_radius_floor, ball_radius_side)
-print('Adams kast:')
 throw_velocity = throw.velocity()
 throw_accuracy = throw.accuracy(cal_floor_x, cal_floor_y, cal_side_x, cal_side_y)
 

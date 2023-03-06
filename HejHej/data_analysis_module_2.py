@@ -5,7 +5,8 @@ class DataAnalyzis:
     def __init__(self, x_floor, y_floor, x_side, y_side, frame_rate, ball_radius_floor, ball_radius_side):
 
         self.frame_rate=frame_rate
-        self.converter = 17.78/(ball_radius_floor+ball_radius_side)
+        self.converter_side = 17.78/(2*ball_radius_side)
+        self.converter_floor = 17.78/(2*ball_radius_floor)
         self.x_floor = x_floor
         self.y_floor = y_floor
         self.x_side = x_side
@@ -114,8 +115,8 @@ class DataAnalyzis:
             del self.y_side[-2:]
         
         for k in range(1,len(self.y_floor)):     
-            distance_between_frames = np.sqrt((self.x_side[k]-self.x_side[k-1])**2+(self.y_floor[k]-self.y_floor[k-1])**2+(self.y_side[k]-self.y_side[k-1])**2)
-            velocity.append(3.6 / 100  * self.converter * distance_between_frames * self.frame_rate)  
+            distance_between_frames = np.sqrt((self.converter_side*(self.x_side[k]-self.x_side[k-1]))**2+(self.converter_floor*(self.y_floor[k]-self.y_floor[k-1]))**2+(self.converter_side*(self.y_side[k]-self.y_side[k-1]))**2)
+            velocity.append(3.6 / 100 * distance_between_frames * self.frame_rate)  
         mean_velocity = sum(velocity)/len(velocity)
         print('Hasitgheten för bollen var: ' + str(mean_velocity) + ' km/h')
         return mean_velocity
@@ -126,8 +127,8 @@ class DataAnalyzis:
         cross_coord_y = cross_position_side_y
         x_coord = self.x_floor[-1]
         y_coord = self.y_side[-1]
-        diff_x = self.converter * (cross_coord_x-x_coord)
-        diff_y = self.converter * (cross_coord_y-y_coord)
+        diff_x = self.converter_floor * (cross_coord_x-x_coord)
+        diff_y = self.converter_side * (cross_coord_y-y_coord)
         diff_tot = np.sqrt(diff_x**2 + diff_y**2)
         print('Bollens avstånd från målet i x-led: ' + str(diff_x) + ' cm')
         print('Bollens avstånd från målet i y_led: ' + str(diff_y) + ' cm')
