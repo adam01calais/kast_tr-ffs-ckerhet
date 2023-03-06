@@ -2,7 +2,7 @@ import cv2
 import os
 from roboflow import Roboflow
 import shutil
-from data_analysis_module_2 import DataAnalyzis 
+from data_analysis_module import DataAnalyzis 
 import numpy as np
 
 class ImageProcessing:
