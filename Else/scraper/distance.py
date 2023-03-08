@@ -1,12 +1,12 @@
 from phone_camera import Phone_Camera
 from math import sqrt
-
-general_phone_thickness = 8.91/1000
-k = 10000000
+from scipy.special import lambertw
+from math import tan
 
 OnePlus8 = Phone_Camera("https://en.wikipedia.org/wiki/OnePlus_8")
-term1 = (-k*(OnePlus8.apperature) + 2*(OnePlus8.megaPixels)
-         * general_phone_thickness)/(4*OnePlus8.megaPixels)
-term2 = k*OnePlus8.apperature*general_phone_thickness/OnePlus8.megaPixels
-distance = -term1 + sqrt(term2 + term1*term1)
-print(distance)
+i= 0.0357143*lambertw(16.0604*sqrt(OnePlus8.megaPixels))
+o = i*tan(1)/(0.000000560*OnePlus8.apperature*i-tan(1))
+
+print(OnePlus8.apperature)
+print(OnePlus8.megaPixels)
+print(o.real)
