@@ -1,5 +1,5 @@
 from data_analysis_module_2 import DataAnalyzis
-from image_processing_module import ImageProcessing
+from HejHej.image_processing_module import ImageProcessing
 # Exempel
 
 # object = ImageProcessing('/Users/efraimzetterqvist/Documents')
