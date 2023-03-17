@@ -58,16 +58,21 @@ def calibrate_cross(video_path):
             if max(abs(x[-2] - x[-1]), abs(y[-2] - y[-1])) < 3:
                 print('Calibration for camera done successfully')
                 break
-        
-        # Sparar kryssets x- & y-koordinat i två variabler samt bollens radie
-        cross_position_x = x[-1]
-        cross_position_y = y[-1]
-        ball_radius = (w[-1] + h[-1])/4
+        # Om bollen inte kunde detekteras
+        if len(x) == 0:
+            # Raderar mappen 'dodge' innehållandes alla frames
+            shutil.rmtree('/Users/efraimzetterqvist/Documents/dodge') 
+            return None, None, None
+        else: 
+            # Sparar kryssets x- & y-koordinat i två variabler samt bollens radie
+            cross_position_x = x[-1]
+            cross_position_y = y[-1]
+            ball_radius = (w[-1] + h[-1])/4
 
-        # Raderar mappen 'dodge' innehållandes alla frames
-        shutil.rmtree('/Users/efraimzetterqvist/Documents/dodge')  
+            # Raderar mappen 'dodge' innehållandes alla frames
+            shutil.rmtree('/Users/efraimzetterqvist/Documents/dodge')  
 
-        # Skriver ut kryssets koordinater samt returnerar dem + bollens radie
-        print('x: ' + str(cross_position_x), 'y: ' + str(cross_position_y))  
-        print('Bollens radie för camera: ' + str(ball_radius))
-        return cross_position_x, cross_position_y, ball_radius
+            # Skriver ut kryssets koordinater samt returnerar dem + bollens radie
+            print('x: ' + str(cross_position_x), 'y: ' + str(cross_position_y))  
+            print('Bollens radie för camera: ' + str(ball_radius))
+            return cross_position_x, cross_position_y, ball_radius

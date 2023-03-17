@@ -6,6 +6,14 @@
     <title>Calibration</title>
 </head>
 <body>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <h1>Calibration Page</h1>
     <nav>
         <ul>
@@ -14,9 +22,9 @@
         </ul>
     </nav>
     <form action="/calibrate" method="POST" enctype="multipart/form-data">
-        <label for="file1">File 1:</label>
+        <label for="file1">Side:</label>
         <input type="file" id="file1" name="file1" accept=".mp4, .mov, .avi" required><br><br>
-        <label for="file2">File 2:</label>
+        <label for="file2">Under:</label>
         <input type="file" id="file2" name="file2" accept=".mp4, .mov, .avi" required><br><br>
         <button type="submit">Calibrate</button>
     </form>

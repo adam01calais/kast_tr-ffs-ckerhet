@@ -6,6 +6,16 @@
     <title>Measure</title>
 </head>
 <body>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <h1>Measure Page</h1>
     <nav>
         <ul>
@@ -13,6 +23,12 @@
             <li><a href="/calibration">Calibration</a></li>
         </ul>
     </nav>
-    <p>This is the measure section.</p>
+    <form action="/measure" method="POST" enctype="multipart/form-data">
+        <label for="file1">Side:</label>
+        <input type="file" id="file1" name="file1" accept=".mp4, .mov, .avi" required><br><br>
+        <label for="file2">Under:</label>
+        <input type="file" id="file2" name="file2" accept=".mp4, .mov, .avi" required><br><br>
+        <button type="submit">Measure throw</button>
+    </form>
 </body>
 </html>
