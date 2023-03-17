@@ -11,7 +11,11 @@
         <ul>
             <li><a href="/calibration">Calibration</a></li>
             <li><a href="/measure">Measure</a></li>
+            {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% endif %}
         </ul>
     </nav>
 </body>
 </html>
+

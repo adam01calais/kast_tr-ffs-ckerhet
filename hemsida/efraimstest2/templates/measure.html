@@ -24,11 +24,33 @@
         </ul>
     </nav>
     <form action="/measure" method="POST" enctype="multipart/form-data">
-        <label for="file1">Side:</label>
+        <label for="file1">Side camera:</label>
         <input type="file" id="file1" name="file1" accept=".mp4, .mov, .avi" required><br><br>
-        <label for="file2">Under:</label>
+        <label for="file2">Under camera:</label>
         <input type="file" id="file2" name="file2" accept=".mp4, .mov, .avi" required><br><br>
         <button type="submit">Measure throw</button>
     </form>
+
+    {% if throw_info.velocity and throw_info.accuracy_x and throw_info.accuracy_y and throw_info.total_distance %}
+    <h3>Throw Results</h3>
+    <p>Velocity: {{ throw_info.velocity }} km/h</p>
+    <p>Distance from center: {{ throw_info.total_distance }} cm</p>
+
+    <svg height="410" width="410">
+        <circle cx="205" cy="205" r="200" fill="black"  />
+        <circle cx="205" cy="205" r="180" fill="white"  />
+        <circle cx="205" cy="205" r="160" fill="black"  />
+        <circle cx="205" cy="205" r="140" fill="white"  />
+        <circle cx="205" cy="205" r="120" fill="black"  />
+        <circle cx="205" cy="205" r="100" fill="white"  />
+        <circle cx="205" cy="205" r="80" fill="black"  />
+        <circle cx="205" cy="205" r="60" fill="white" />
+        <circle cx="205" cy="205" r="40" fill="black" />
+        <circle cx="205" cy="205" r="20" fill="white"  />
+        <circle cx="205" cy="205" r="3" fill="black" />
+        <circle cx="{{ 205 + (throw_info.accuracy_x * 2) }}" cy="{{ 205 + (throw_info.accuracy_y * 2) }}" r="5" fill="red" />
+    </svg>
+    
+    {% endif %}
 </body>
 </html>

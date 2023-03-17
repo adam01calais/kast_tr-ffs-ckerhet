@@ -1,0 +1,16 @@
+<!-- register.html -->
+<!-- templates/register.html -->
+
+{% for message in messages %}
+  <p>{{ message }}</p>
+{% endfor %}
+
+<form method="POST" action="/register">
+  <label for="username">Username:</label>
+  <input type="text" id="username" name="username" required>
+  <br>
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password" required>
+  <br>
+  <input type="submit" value="Sign Up">
+</form>
