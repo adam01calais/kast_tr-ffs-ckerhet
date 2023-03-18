@@ -107,7 +107,15 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
         
         for k in range(1,len(y_floor)):     
             distance_between_frames = np.sqrt((converter_side*(x_side[k]-x_side[k-1]))**2+(converter_floor*(y_floor[k]-y_floor[k-1]))**2+(converter_side*(y_side[k]-y_side[k-1]))**2)
-            velocity.append(3.6 / 100 * distance_between_frames * frame_rate)  
-        mean_velocity = sum(velocity)/len(velocity)
-        print('Hasitgheten för bollen var: ' + str(mean_velocity) + ' km/h')
-        return round(mean_velocity, 1)
+            velocity.append(3.6 / 100 * distance_between_frames * frame_rate) 
+        if len(velocity) > 0:
+            mean_velocity = sum(velocity) / len(velocity)
+            print('Hasitgheten för bollen var: ' + str(mean_velocity) + ' km/h')
+            return round(mean_velocity, 1)
+        else:
+            # Handle the case when the velocity list is empty
+            print("No throw detected")
+            mean_velocity = None 
+            return mean_velocity
+        
+        

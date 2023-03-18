@@ -8,7 +8,7 @@ from accuracy_module import accuracy
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-
+from urllib.parse import urlparse, urljoin
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
@@ -26,12 +26,19 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
 
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 @app.context_processor
 def inject_current_user():
@@ -40,7 +47,6 @@ def inject_current_user():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    messages = get_flashed_messages()
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -51,13 +57,14 @@ def register():
             new_user = User(username=username, password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
-            flash('You have successfully registered! Please log in.')
+            flash('You have successfully registered! Please log in.', 'success')
             return redirect(url_for('login'))
         else:
-            flash('A user with that username already exists. Please choose a different username.')
+            flash('A user with that username already exists. Please choose a different username.', 'error')
             return redirect(url_for('register'))
 
-    return render_template('register.html', messages=messages)
+    return render_template('register.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -70,6 +77,9 @@ def login():
 
         if user and check_password_hash(user.password, password):
             login_user(user)
+            next_page = request.args.get('next')
+            if next_page and is_safe_url(next_page):
+                return redirect(next_page)
             return redirect(url_for('measure'))
 
         flash('Invalid username or password.')
@@ -77,11 +87,11 @@ def login():
     return render_template('login.html')
 
 
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
+    session.clear()  # Clear the session data
     return redirect(url_for('home'))
 
 
@@ -89,45 +99,10 @@ def logout():
 def home():
     return render_template('index.html')
 
-@app.route('/calibrate', methods=['POST'])
-def calibrate():
-    file1 = request.files['file1']
-    file2 = request.files['file2']
-    filename1 = secure_filename(file1.filename)
-    filename2 = secure_filename(file2.filename)
-    file_path1 = os.path.join(app.config['UPLOAD_FOLDER'], filename1)
-    file_path2 = os.path.join(app.config['UPLOAD_FOLDER'], filename2)
-    file1.save(file_path1)
-    file2.save(file_path2)
 
-    cross_position_x_side, cross_position_y_side, ball_radius_side = calibrate_cross(file_path1)  # Run the calibration function for the first file
-    cross_position_x_floor, cross_position_y_floor, ball_radius_floor = calibrate_cross(file_path2)  # Run the calibration function for the second file
-
-    # Check if both results are valid (you can customize the condition as needed)
-    if cross_position_x_side is not None and cross_position_x_floor is not None:
-        # Store the calibration results in the session
-        session['calibration_results'] = {'x_side': cross_position_x_side, 'y_side': cross_position_y_side, 'bollradie_side': ball_radius_side, 'x_floor': cross_position_x_floor, 'y_floor': cross_position_y_floor, 'bollradie_floor': ball_radius_floor}
-
-        # Display a success message
-        flash('Calibration successful!')
-    else:
-        flash('The ball could not be detected. Proceed with a new calibration video!')
-
-    return redirect(url_for('calibration'))
-
-
-
-@app.route('/calibration', methods=['GET'])
-def calibration():
-    messages = get_flashed_messages()
-    return render_template('calibration.html', messages=messages)
-
-
-@app.route('/measure', methods=['GET', 'POST'])
+@app.route('/calibration', methods=['GET', 'POST'])
 @login_required
-def measure():
-    throw_info = session.get('throw_info', {'velocity': None, 'accuracy_x': None, 'accuracy_y': None, 'total_distance': None})
-    messages = get_flashed_messages()
+def calibration():
     if request.method == 'POST':
         file1 = request.files['file1']
         file2 = request.files['file2']
@@ -137,6 +112,39 @@ def measure():
         file_path2 = os.path.join(app.config['UPLOAD_FOLDER'], filename2)
         file1.save(file_path1)
         file2.save(file_path2)
+
+        cross_position_x_side, cross_position_y_side, ball_radius_side = calibrate_cross(file_path1)  # Run the calibration function for the first file
+        cross_position_x_floor, cross_position_y_floor, ball_radius_floor = calibrate_cross(file_path2)  # Run the calibration function for the second file
+
+        # Check if both results are valid (you can customize the condition as needed)
+        if cross_position_x_side is not None and cross_position_x_floor is not None:
+            # Store the calibration results in the session
+            session['calibration_results'] = {'x_side': cross_position_x_side, 'y_side': cross_position_y_side, 'bollradie_side': ball_radius_side, 'x_floor': cross_position_x_floor, 'y_floor': cross_position_y_floor, 'bollradie_floor': ball_radius_floor}
+
+            # Display a success message
+            session.pop('_flashes', None)
+            flash('Calibration successful!', 'success')
+        else:
+            session.pop('_flashes', None)
+            flash('The ball could not be detected. Proceed with a new calibration video!', 'error')
+
+    return render_template('calibration.html')
+
+
+@app.route('/measure', methods=['GET', 'POST'])
+@login_required
+def measure():
+    throw_info = session.get('throw_info', {'velocity': None, 'accuracy_x': None, 'accuracy_y': None, 'total_distance': None})
+    if request.method == 'POST':
+        file1 = request.files['file1']
+        file2 = request.files['file2']
+        filename1 = secure_filename(file1.filename)
+        filename2 = secure_filename(file2.filename)
+        file_path1 = os.path.join(app.config['UPLOAD_FOLDER'], filename1)
+        file_path2 = os.path.join(app.config['UPLOAD_FOLDER'], filename2)
+        file1.save(file_path1)
+        file2.save(file_path2)
+        frame_rate = int(request.form.get('frame_rate', 0))
 
         calibration_results = session.get('calibration_results', None)
 
@@ -157,21 +165,28 @@ def measure():
             x_list_floor, y_list_floor = measure_throw(file_path2, ball_radius_floor, 'floor')
 
             if len(x_list_side) and len(x_list_floor) > 3:
-                throw_velocity = velocity(x_list_side, y_list_side, x_list_floor, y_list_floor, ball_radius_side, ball_radius_floor, 240)
-                accuracy_x, accuracy_y, total_distance = accuracy(x_list_floor, y_list_side, ball_radius_side, ball_radius_floor, cal_x_floor, cal_y_floor, cal_x_side, cal_y_side)
-                flash('Throw successfully measured')
-                session['measure_results'] = {'x_list_side': x_list_side, 'y_list_side': y_list_side, 'x_list_floor': x_list_floor, 'y_list_floor': y_list_floor}
-                session['throw_info'] = {'velocity': throw_velocity, 'accuracy_x': accuracy_x, 'accuracy_y': accuracy_y, 'total_distance': total_distance}
-                return render_template('measure.html', messages=messages, throw_info=session['throw_info'])
+                throw_velocity = velocity(x_list_side, y_list_side, x_list_floor, y_list_floor, ball_radius_side, ball_radius_floor, frame_rate)
+                if throw_velocity == None:
+                    session.pop('_flashes', None)
+                    flash('Throw could not be measured. Make another throw!', 'error')
+                else:
+                    accuracy_x, accuracy_y, total_distance = accuracy(x_list_floor, y_list_side, ball_radius_side, ball_radius_floor, cal_x_floor, cal_y_floor, cal_x_side, cal_y_side)
+                    session.pop('_flashes', None)
+                    flash('Throw successfully measured', 'success')
+                    session['measure_results'] = {'x_list_side': x_list_side, 'y_list_side': y_list_side, 'x_list_floor': x_list_floor, 'y_list_floor': y_list_floor}
+                    session['throw_info'] = {'velocity': throw_velocity, 'accuracy_x': accuracy_x, 'accuracy_y': accuracy_y, 'total_distance': total_distance}
+                return render_template('measure.html', throw_info=session['throw_info'])
             
             else:
-                flash('Throw could not be measured. Make another throw!')
-                return render_template('measure.html', messages=messages, throw_info=throw_info)
+                session.pop('_flashes', None)
+                flash('Throw could not be measured. Make another throw!', 'error')
+                return render_template('measure.html', throw_info=throw_info)
         else:
-            flash("Please calibrate the system before measuring.")
-            return render_template('measure.html', messages=messages, throw_info=throw_info)
+            session.pop('_flashes', None)
+            flash("Please calibrate before measuring.", 'error')
+            return render_template('measure.html', throw_info=throw_info)
     else:
-        return render_template('measure.html', messages=messages, throw_info=throw_info)
+        return render_template('measure.html', throw_info=throw_info)
 
 
 if __name__ == '__main__':

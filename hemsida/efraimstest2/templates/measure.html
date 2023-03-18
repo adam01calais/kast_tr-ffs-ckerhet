@@ -4,53 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Measure</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #FFFFFF;
+            font-family: Arial, sans-serif;
+        }
+        nav {
+            background-color: #000000;
+            padding: 1rem;
+        }
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: flex-end;
+        }
+        nav ul li {
+            margin-left: 1rem;
+        }
+        nav ul li a {
+            color: #FFFFFF;
+            text-decoration: none;
+        }
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #F5F5F5;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .alert-success {
+            background-color: #D4EDDA;
+            color: #155724;
+            border-color: #C3E6CB;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .alert-error {
+            background-color: #F8D7DA;
+            color: #842029;
+            border-color: #F5C6CB;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        svg {
+            display: block;
+            margin: 0 auto;
+            background-color: #F5F5F5;
+            border: 1px solid #000;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert alert-success" role="alert">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <h1>Measure Page</h1>
     <nav>
         <ul>
             <li><a href="/">Home</a></li>
             <li><a href="/calibration">Calibration</a></li>
+            {% if current_user.is_authenticated %}
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
+            {% endif %}
         </ul>
     </nav>
-    <form action="/measure" method="POST" enctype="multipart/form-data">
-        <label for="file1">Side camera:</label>
-        <input type="file" id="file1" name="file1" accept=".mp4, .mov, .avi" required><br><br>
-        <label for="file2">Under camera:</label>
-        <input type="file" id="file2" name="file2" accept=".mp4, .mov, .avi" required><br><br>
-        <button type="submit">Measure throw</button>
-    </form>
-
-    {% if throw_info.velocity and throw_info.accuracy_x and throw_info.accuracy_y and throw_info.total_distance %}
-    <h3>Throw Results</h3>
-    <p>Velocity: {{ throw_info.velocity }} km/h</p>
-    <p>Distance from center: {{ throw_info.total_distance }} cm</p>
-
-    <svg height="410" width="410">
-        <circle cx="205" cy="205" r="200" fill="black"  />
-        <circle cx="205" cy="205" r="180" fill="white"  />
-        <circle cx="205" cy="205" r="160" fill="black"  />
-        <circle cx="205" cy="205" r="140" fill="white"  />
-        <circle cx="205" cy="205" r="120" fill="black"  />
-        <circle cx="205" cy="205" r="100" fill="white"  />
-        <circle cx="205" cy="205" r="80" fill="black"  />
-        <circle cx="205" cy="205" r="60" fill="white" />
-        <circle cx="205" cy="205" r="40" fill="black" />
-        <circle cx="205" cy="205" r="20" fill="white"  />
-        <circle cx="205" cy="205" r="3" fill="black" />
-        <circle cx="{{ 205 + (throw_info.accuracy_x * 2) }}" cy="{{ 205 + (throw_info.accuracy_y * 2) }}" r="5" fill="red" />
-    </svg>
     
-    {% endif %}
+    <div class="container">
+        <h1>Measure Page</h1>
+        <div id="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert {% if category == 'success' %}alert-success{% else %}alert-error{% endif %}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>        
+        <form action="/measure" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file1">Side camera:</label>
+                <input type="file" id="file1" name="file1" class="form-control-file" accept=".mp4, .mov, .avi" required>
+            </div>
+            <div class="form-group">
+                <label for="file2">Under camera:</label>
+                <input type="file" id="file2" name="file2" class="form-control-file" accept=".mp4, .mov, .avi" required>
+            </div>
+            <div class="form-group">
+                <label for="frame_rate">Frame rate:</label>
+                <input type="number" id="frame_rate" name="frame_rate" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-danger">Measure throw</button>
+        </form>
+
+        {% if throw_info.velocity and throw_info.accuracy_x and throw_info.accuracy_y and throw_info.total_distance %}
+        <h3>Throw Results</h3>
+        <p>Velocity: {{ throw_info.velocity }} km/h</p>
+        <p>Distance from center: {{ throw_info.total_distance }} cm</p>
+
+        <svg height="410" width="410">
+            <circle cx="205" cy="205" r="200" fill="black"  />
+            <circle cx="205" cy="205" r="180" fill="white"  />
+            <circle cx="205" cy="205" r="160" fill="black"  />
+            <circle cx="205" cy="205" r="140" fill="white"  />
+            <circle cx="205" cy="205" r="120" fill="black"  />
+            <circle cx="205" cy="205" r="100" fill="white"  />
+            <circle cx="205" cy="205" r="80" fill="black"  />
+            <circle cx="205" cy="205" r="60" fill="white" />
+            <circle cx="205" cy="205" r="40" fill="black" />
+            <circle cx="205" cy="205" r="20" fill="white"  />
+            <circle cx="205" cy="205" r="3" fill="black" />
+            <circle cx="{{ 205 + (throw_info.accuracy_x * 2) }}" cy="{{ 205 + (throw_info.accuracy_y * 2) }}" r="5" fill="red" />
+        </svg>
+
+        {% endif %}
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.getElementById('flash-messages');
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        while (mutation.target.firstElementChild !== mutation.addedNodes[0]) {
+                            mutation.target.firstElementChild.remove();
+                        }
+                    }
+                });
+            });
+
+            observer.observe(flashMessages, { childList: true });
+        });
+    </script>
 </body>
 </html>

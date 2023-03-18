@@ -4,18 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1b1b1b;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            background-color: #c70000;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        nav {
+            background-color: #282828;
+            padding: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        li {
+            margin-right: 10px;
+        }
+
+        a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #c70000;
+        }
+    </style>
 </head>
 <body>
     <h1>Welcome to the Home Page</h1>
     <nav>
         <ul>
             <li><a href="/calibration">Calibration</a></li>
-            <li><a href="/measure">Measure</a></li>
+            <li><a href="/measure">Measure throw</a></li>
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            {% else %}
+                <li><a href="{{ url_for('login') }}">Login</a></li>
             {% endif %}
         </ul>
     </nav>
+    
 </body>
 </html>
+
 
