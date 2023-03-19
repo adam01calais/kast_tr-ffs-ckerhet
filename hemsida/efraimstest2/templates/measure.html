@@ -58,13 +58,50 @@
             border: 1px solid #000;
             border-radius: 5px;
         }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        #measure-btn {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .loader-container {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            margin-left: 10px;
+        }
+        nav ul li.active a {
+            color: #FFA500; /* Change to your preferred color */
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/calibration">Calibration</a></li>
+            <li class="{{ 'active' if request.endpoint == 'home' }}"><a href="/">Home</a></li>
+            <li class="{{ 'active' if request.endpoint == 'calibration' }}"><a href="/calibration">Calibration</a></li>
+            <li class="{{ 'active' if request.endpoint == 'measure' }}"><a href="/measure">Measure Throw</a></li>
+            <li class="{{ 'active' if request.endpoint == 'how_it_works' }}"><a href="/how-it-works">How does it work?</a></li>
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
@@ -72,9 +109,8 @@
             {% endif %}
         </ul>
     </nav>
-    
     <div class="container">
-        <h1>Measure Page</h1>
+        <h1>Measure Throw</h1>
         <div id="flash-messages">
             {% with messages = get_flashed_messages(with_categories=True) %}
                 {% if messages %}
@@ -88,18 +124,20 @@
         </div>        
         <form action="/measure" method="post" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="file1">Side camera:</label>
+                <label for="file1">Side Camera:</label>
                 <input type="file" id="file1" name="file1" class="form-control-file" accept=".mp4, .mov, .avi" required>
+                <small class="form-text text-muted">Accepted formats: .mp4, .mov, .avi</small>
             </div>
             <div class="form-group">
-                <label for="file2">Under camera:</label>
+                <label for="file2">Underneath Camera:</label>
                 <input type="file" id="file2" name="file2" class="form-control-file" accept=".mp4, .mov, .avi" required>
+                <small class="form-text text-muted">Accepted formats: .mp4, .mov, .avi</small>
             </div>
             <div class="form-group">
-                <label for="frame_rate">Frame rate:</label>
+                <label for="frame_rate">Frame rate (fps):</label>
                 <input type="number" id="frame_rate" name="frame_rate" class="form-control" required>
             </div>
-            <button type="submit" class="btn btn-danger">Measure throw</button>
+            <button type="submit" id="measure-btn">Measure</button>
         </form>
 
         {% if throw_info.velocity and throw_info.accuracy_x and throw_info.accuracy_y and throw_info.total_distance %}
@@ -140,5 +178,15 @@
             observer.observe(flashMessages, { childList: true });
         });
     </script>
+    <script>
+        const measureForm = document.querySelector('form[method="POST"]');
+        const measureBtn = document.getElementById('measure-btn');
+
+        measureForm.addEventListener('submit', function () {
+            measureBtn.innerHTML = 'Measure <div class="loader-container"><div class="loader"></div></div>';
+            measureBtn.disabled = true;
+            //measureBtn.style.minWidth = '140px'; // Ensure the button doesn't shrink when the loader is added
+        });
+    </script>    
 </body>
 </html>

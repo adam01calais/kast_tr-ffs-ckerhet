@@ -104,14 +104,14 @@ def home():
 @login_required
 def calibration():
     if request.method == 'POST':
-        file1 = request.files['file1']
-        file2 = request.files['file2']
-        filename1 = secure_filename(file1.filename)
-        filename2 = secure_filename(file2.filename)
+        side_camera_file = request.files['sideCamera']
+        underneath_camera_file = request.files['underneathCamera']
+        filename1 = secure_filename(side_camera_file.filename)
+        filename2 = secure_filename(underneath_camera_file.filename)
         file_path1 = os.path.join(app.config['UPLOAD_FOLDER'], filename1)
         file_path2 = os.path.join(app.config['UPLOAD_FOLDER'], filename2)
-        file1.save(file_path1)
-        file2.save(file_path2)
+        side_camera_file.save(file_path1)
+        underneath_camera_file.save(file_path2)
 
         cross_position_x_side, cross_position_y_side, ball_radius_side = calibrate_cross(file_path1)  # Run the calibration function for the first file
         cross_position_x_floor, cross_position_y_floor, ball_radius_floor = calibrate_cross(file_path2)  # Run the calibration function for the second file
@@ -187,6 +187,11 @@ def measure():
             return render_template('measure.html', throw_info=throw_info)
     else:
         return render_template('measure.html', throw_info=throw_info)
+    
+
+@app.route('/how-it-works', methods=['GET'])
+def how_it_works():
+    return render_template('how_it_works.html')
 
 
 if __name__ == '__main__':

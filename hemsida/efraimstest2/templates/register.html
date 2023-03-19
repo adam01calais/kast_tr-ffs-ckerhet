@@ -7,17 +7,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        nav ul li.active a {
+            color: #FFA500; /* Change to your preferred color */
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <header>
         <h1>Register</h1>
         <nav>
             <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/calibration">Calibration</a></li>
-                <li><a href="/measure">Measure throw</a></li>
+                <li class="{{ 'active' if request.endpoint == 'home' }}"><a href="/">Home</a></li>
+                <li class="{{ 'active' if request.endpoint == 'calibration' }}"><a href="/calibration">Calibration</a></li>
+                <li class="{{ 'active' if request.endpoint == 'measure' }}"><a href="/measure">Measure Throw</a></li>
+                <li class="{{ 'active' if request.endpoint == 'how_it_works' }}"><a href="/how-it-works">How does it work?</a></li>
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
+                {% endif %}
             </ul>
         </nav>
+        
     </header>
     <main>
         <div id="flash-messages">

@@ -4,44 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
-            background-color: #FFFFFF;
             font-family: Arial, sans-serif;
+            background-color: #1b1b1b;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
         }
+
+        h1 {
+            background-color: #c70000;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
         nav {
-            background-color: #000000;
-            padding: 1rem;
+            background-color: #282828;
+            padding: 10px;
         }
-        nav ul {
+
+        ul {
             list-style-type: none;
+            margin: 0;
+            padding: 0;
             display: flex;
-            justify-content: flex-end;
         }
-        nav ul li {
-            margin-left: 1rem;
+
+        li {
+            margin-right: 10px;
         }
-        nav ul li a {
-            color: #FFFFFF;
+
+        a {
+            color: #ffffff;
             text-decoration: none;
         }
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: #F5F5F5;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+        a:hover {
+            color: #c70000;
         }
         nav ul li.active a {
             color: #FFA500; /* Change to your preferred color */
             font-weight: bold;
         }
-
     </style>
 </head>
 <body>
+    <h1>Welcome to the Home Page</h1>
     <nav>
         <ul>
             <li class="{{ 'active' if request.endpoint == 'home' }}"><a href="/">Home</a></li>
@@ -54,10 +63,8 @@
                 <li><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
             {% endif %}
         </ul>
-    </nav>
-    <div class="container">
-        <h1>Welcome to Dodgeball Throw Analyzer</h1>
-        <p>Measure the velocity and accuracy of your dodgeball throws using our advanced video analysis system. Get started by calibrating your cameras and measuring your throws.</p>
-    </div>
+    </nav> 
 </body>
 </html>
+
+

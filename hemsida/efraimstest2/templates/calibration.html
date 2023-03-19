@@ -4,81 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calibration</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         body {
+            background-color: #FFFFFF;
             font-family: Arial, sans-serif;
-            background-color: #1b1b1b;
-            color: #ffffff;
-            margin: 0;
-            padding: 0;
         }
-
-        h1 {
-            background-color: #c70000;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
         nav {
-            background-color: #282828;
-            padding: 10px;
+            background-color: #000000;
+            padding: 1rem;
         }
-
-        ul {
+        nav ul {
             list-style-type: none;
-            margin: 0;
-            padding: 0;
             display: flex;
+            justify-content: flex-end;
         }
-
-        li {
-            margin-right: 10px;
+        nav ul li {
+            margin-left: 1rem;
         }
-
-        a {
-            color: #ffffff;
+        nav ul li a {
+            color: #FFFFFF;
             text-decoration: none;
         }
-
-        a:hover {
-            color: #c70000;
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: #F5F5F5;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
-        form {
-            margin: 20px;
-        }
-
-        button {
-            background-color: #c70000;
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 10px 2px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #9a0000;
-        }
-
-        .loader {
-            display: inline-block;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-top-color: #f3f3f3;
-            border-radius: 50%;
-            width: 1rem;
-            height: 1rem;
-            animation: spin 0.75s linear infinite;
-            vertical-align: middle;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        nav ul li.active a {
+            color: #FFA500; /* Change to your preferred color */
+            font-weight: bold;
         }
         .alert-success {
             background-color: #D4EDDA;
@@ -96,6 +54,44 @@
             margin-bottom: 10px;
             border-radius: 5px;
         }
+
+        svg {
+            display: block;
+            margin: 0 auto;
+            background-color: #F5F5F5;
+            border: 1px solid #000;
+            border-radius: 5px;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #007bff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        #calibrate-btn {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .loader-container {
+            display: inline-flex;
+            align-items: center;
+            height: 100%;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -110,12 +106,12 @@
             {% endif %}
         {% endwith %}
     </div>    
-
-    <h1>Calibration Page</h1>
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/measure">Measure throw</a></li>
+            <li class="{{ 'active' if request.endpoint == 'home' }}"><a href="/">Home</a></li>
+            <li class="{{ 'active' if request.endpoint == 'calibration' }}"><a href="/calibration">Calibration</a></li>
+            <li class="{{ 'active' if request.endpoint == 'measure' }}"><a href="/measure">Measure Throw</a></li>
+            <li class="{{ 'active' if request.endpoint == 'how_it_works' }}"><a href="/how-it-works">How does it work?</a></li>
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
@@ -123,14 +119,35 @@
             {% endif %}
         </ul>
     </nav>
-    
-    <form action="/calibration" method="POST" enctype="multipart/form-data">
-        <label for="file1">Side camera:</label>
-        <input type="file" id="file1" name="file1" accept=".mp4, .mov, .avi" required><br><br>
-        <label for="file2">Under camera:</label>
-        <input type="file" id="file2" name="file2" accept=".mp4, .mov, .avi" required><br><br>
-        <button type="submit" id="calibrate-btn">Calibrate</button>
-    </form>
+    <div class="container">
+        <h1>Calibration</h1>
+        <p>Before you can accurately measure your dodgeball throws, you need to calibrate your camera setup. Calibration ensures that the measurements taken by our system are precise and tailored to your specific setup.</p>
+
+        <h2>Calibration Process</h2>
+        <p>Follow these steps to calibrate your camera setup:</p>
+        <ol>
+            <li>Position a calibration object (such as a ruler or tape measure) at the center of the throwing area, making sure it is clearly visible from both cameras.</li>
+            <li>Record a short video of the calibration object from each camera, ensuring that the entire object is visible in the frame.</li>
+            <li>Upload the calibration videos from each camera using the form below.</li>
+            <li>After uploading the videos, our system will analyze the footage and calculate the necessary calibration parameters for your camera setup.</li>
+        </ol>
+        <p>Once calibration is complete, you can proceed to measure your dodgeball throws.</p>
+
+        <h2>Upload Calibration Videos</h2>
+        <form action="/calibration" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="sideCamera">Side Camera:</label>
+                <input type="file" class="form-control-file" id="sideCamera" name="sideCamera" required>
+                <small class="form-text text-muted">Accepted formats: .mp4, .mov, .avi</small>
+            </div>
+            <div class="form-group">
+                <label for="underneathCamera">Underneath Camera:</label>
+                <input type="file" class="form-control-file" id="underneathCamera" name="underneathCamera" required>
+                <small class="form-text text-muted">Accepted formats: .mp4, .mov, .avi</small>
+            </div>
+            <button type="submit" id="calibrate-btn">Calibrate</button>
+        </form>
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const flashMessages = document.getElementById('flash-messages');
@@ -152,9 +169,9 @@
         const calibrateBtn = document.getElementById('calibrate-btn');
       
         calibrateForm.addEventListener('submit', function () {
-          calibrateBtn.innerHTML = 'Calibrate <div class="loader"></div>';
+          calibrateBtn.innerHTML = 'Calibrate <div class="loader-container"><div class="loader"></div></div>';
           calibrateBtn.disabled = true;
-          calibrateBtn.style.minWidth = '120px'; // Ensure the button doesn't shrink when the loader is added
+          //calibrateBtn.style.minWidth = '120px'; // Ensure the button doesn't shrink when the loader is added
         });
     </script>  
 </body>
