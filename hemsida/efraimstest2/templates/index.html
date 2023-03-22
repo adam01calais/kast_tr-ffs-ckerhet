@@ -4,47 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #FFFFFF;
-            font-family: Arial, sans-serif;
-        }
-        nav {
-            background-color: #000000;
-            padding: 1rem;
-        }
-        nav ul {
-            list-style-type: none;
-            display: flex;
-            justify-content: flex-end;
-        }
-        nav ul li {
-            margin-left: 1rem;
-        }
-        nav ul li a {
-            color: #FFFFFF;
-            text-decoration: none;
-        }
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: #F5F5F5;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        nav ul li.active a {
-            color: #FFA500; /* Change to your preferred color */
-            font-weight: bold;
-        }
-
-    </style>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Satisfy&display=swap" />
 </head>
 <body>
+    <div class="background-image"></div>
     <nav>
+        <a href="#" class="website-name">Dodgeball Throw Analyzer</a>
         <ul>
             <li class="{{ 'active' if request.endpoint == 'home' }}"><a href="/">Home</a></li>
+            <li class="{{ 'active' if request.endpoint == 'my_page' }}"><a href="/my-page">My Page</a></li>
             <li class="{{ 'active' if request.endpoint == 'calibration' }}"><a href="/calibration">Calibration</a></li>
             <li class="{{ 'active' if request.endpoint == 'measure' }}"><a href="/measure">Measure Throw</a></li>
             <li class="{{ 'active' if request.endpoint == 'how_it_works' }}"><a href="/how-it-works">How does it work?</a></li>

@@ -1,20 +1,24 @@
 import os
 import cv2
 from calibration_module import calibrate_cross
-from flask import Flask, render_template, request, redirect, url_for, flash, session, get_flashed_messages, current_app
-from werkzeug.utils import secure_filename
+from measure_module import measure_throw
 from velocity_module import velocity
 from accuracy_module import accuracy
+from flask import Flask, render_template, request, redirect, url_for, flash, session, get_flashed_messages, current_app, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
+from flask_migrate import Migrate
+from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import urlparse, urljoin
+from datetime import timedelta, datetime
+
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secure key
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
 login_manager = LoginManager()
@@ -26,10 +30,12 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
 
+
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
@@ -79,10 +85,11 @@ def login():
             login_user(user)
             next_page = request.args.get('next')
             if next_page and is_safe_url(next_page):
+                flash('You have successfully logged in!', 'success')
                 return redirect(next_page)
             return redirect(url_for('measure'))
 
-        flash('Invalid username or password.')
+        flash('Invalid username or password.', 'error')
 
     return render_template('login.html')
 
@@ -99,6 +106,7 @@ def logout():
 def home():
     return render_template('index.html')
 
+   
 
 @app.route('/calibration', methods=['GET', 'POST'])
 @login_required
@@ -126,7 +134,7 @@ def calibration():
             flash('Calibration successful!', 'success')
         else:
             session.pop('_flashes', None)
-            flash('The ball could not be detected. Proceed with a new calibration video!', 'error')
+            flash('The dodgeball could not be detected. Proceed with a new calibration video!', 'error')
 
     return render_template('calibration.html')
 
@@ -150,7 +158,6 @@ def measure():
 
         if calibration_results:
             # Import the measure function from measure_module.py
-            from measure_module import measure_throw
 
             # Get ball_radius_side and ball_radius_floor from calibration results
             ball_radius_side = calibration_results['bollradie_side']

@@ -4,97 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calibration</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            background-color: #FFFFFF;
-            font-family: Arial, sans-serif;
-        }
-        nav {
-            background-color: #000000;
-            padding: 1rem;
-        }
-        nav ul {
-            list-style-type: none;
-            display: flex;
-            justify-content: flex-end;
-        }
-        nav ul li {
-            margin-left: 1rem;
-        }
-        nav ul li a {
-            color: #FFFFFF;
-            text-decoration: none;
-        }
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: #F5F5F5;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        nav ul li.active a {
-            color: #FFA500; /* Change to your preferred color */
-            font-weight: bold;
-        }
-        .alert-success {
-            background-color: #D4EDDA;
-            color: #155724;
-            border-color: #C3E6CB;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-        .alert-error {
-            background-color: #F8D7DA;
-            color: #842029;
-            border-color: #F5C6CB;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-        }
-
-        svg {
-            display: block;
-            margin: 0 auto;
-            background-color: #F5F5F5;
-            border: 1px solid #000;
-            border-radius: 5px;
-        }
-
-        .loader {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #007bff;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 0.6s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
-        }
-        #calibrate-btn {
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .loader-container {
-            display: inline-flex;
-            align-items: center;
-            height: 100%;
-            margin-left: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Satisfy&display=swap" />
 </head>
 <body>
+    <div class="background-image"></div>
     <div id="flash-messages">
         {% with messages = get_flashed_messages(with_categories=True) %}
             {% if messages %}
@@ -107,8 +21,10 @@
         {% endwith %}
     </div>    
     <nav>
+        <a href='#' class="website-name">Dodgeball Throw Analyzer</a>
         <ul>
             <li class="{{ 'active' if request.endpoint == 'home' }}"><a href="/">Home</a></li>
+            <li class="{{ 'active' if request.endpoint == 'my_page' }}"><a href="/my-page">My Page</a></li>
             <li class="{{ 'active' if request.endpoint == 'calibration' }}"><a href="/calibration">Calibration</a></li>
             <li class="{{ 'active' if request.endpoint == 'measure' }}"><a href="/measure">Measure Throw</a></li>
             <li class="{{ 'active' if request.endpoint == 'how_it_works' }}"><a href="/how-it-works">How does it work?</a></li>
@@ -126,8 +42,8 @@
         <h2>Calibration Process</h2>
         <p>Follow these steps to calibrate your camera setup:</p>
         <ol>
-            <li>Position a calibration object (such as a ruler or tape measure) at the center of the throwing area, making sure it is clearly visible from both cameras.</li>
-            <li>Record a short video of the calibration object from each camera, ensuring that the entire object is visible in the frame.</li>
+            <li>Hold a dodgeball at the center of the target on the wall, making sure it is clearly visible from both cameras.</li>
+            <li>Simultaneously record a short video (5 seconds is sufficient) of the dodgeball from each camera, making sure that the entire object is visible in the frame. Both cameras should capture footage during the same 5-second time frame, but their recordings should be separate.</li>
             <li>Upload the calibration videos from each camera using the form below.</li>
             <li>After uploading the videos, our system will analyze the footage and calculate the necessary calibration parameters for your camera setup.</li>
         </ol>
@@ -136,35 +52,62 @@
         <h2>Upload Calibration Videos</h2>
         <form action="/calibration" method="POST" enctype="multipart/form-data">
             <div class="form-group">
-                <label for="sideCamera">Side Camera:</label>
+                <label for="sideCamera">Side Camera: </label>
                 <input type="file" class="form-control-file" id="sideCamera" name="sideCamera" required>
-                <small class="form-text text-muted">Accepted formats: .mp4, .mov, .avi</small>
+                <small class="form-text text-muted" style="font-size: 10px; margin-top: -10px;">(Accepted formats: .mp4, .mov, .avi)</small>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="margin-top: 20px;">
                 <label for="underneathCamera">Underneath Camera:</label>
                 <input type="file" class="form-control-file" id="underneathCamera" name="underneathCamera" required>
-                <small class="form-text text-muted">Accepted formats: .mp4, .mov, .avi</small>
+                <small class="form-text text-muted" style="font-size: 10px; margin-top: -10px;">(Accepted formats: .mp4, .mov, .avi)</small>
             </div>
             <button type="submit" id="calibrate-btn">Calibrate</button>
         </form>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const flashMessages = document.getElementById('flash-messages');
-            const observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                        while (mutation.target.firstElementChild !== mutation.addedNodes[0]) {
-                            mutation.target.firstElementChild.remove();
-                        }
-                    }
-                });
+        function initFlashMessagesObserver() {
+          const flashMessages = document.getElementById('flash-messages');
+          const observer = new MutationObserver(function (mutations) {
+            mutations.forEach(function (mutation) {
+              if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                while (mutation.target.firstElementChild !== mutation.addedNodes[0]) {
+                  mutation.target.firstElementChild.remove();
+                }
+              }
             });
-    
-            observer.observe(flashMessages, { childList: true });
+          });
+      
+          observer.observe(flashMessages, { childList: true });
+        }
+      
+        function addButtonLoader(button, form) {
+            form.addEventListener('submit', function () {
+                button.innerHTML += ' <span class="loader-container"><div class="loader"></div></span>';
+                button.classList.add('loading');
+                button.disabled = true;
+            });
+        }
+
+      
+        document.addEventListener('DOMContentLoaded', function () {
+          initFlashMessagesObserver();
+      
+          const pathname = window.location.pathname;
+      
+          if (pathname === '/calibration') {
+            const calibrateBtn = document.getElementById('calibrate-btn');
+            const calibrateForm = document.querySelector('form[method="POST"][action="/calibration"]');
+            addButtonLoader(calibrateBtn, calibrateForm);
+          } else if (pathname === '/measure') {
+            const measureBtn = document.getElementById('measure-btn');
+            const measureForm = document.querySelector('form[method="POST"][action="/measure"]');
+            addButtonLoader(measureBtn, measureForm);
+          }
         });
     </script>
-    <script>
+      
+      
+    <!-- <script>
         const calibrateForm = document.querySelector('form[method="POST"]');
         const calibrateBtn = document.getElementById('calibrate-btn');
       
@@ -173,6 +116,6 @@
           calibrateBtn.disabled = true;
           //calibrateBtn.style.minWidth = '120px'; // Ensure the button doesn't shrink when the loader is added
         });
-    </script>  
+    </script>   -->
 </body>
 </html>
