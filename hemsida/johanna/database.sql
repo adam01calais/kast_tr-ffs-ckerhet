@@ -1,5 +1,11 @@
-CREATE TABLE saved_data (
+CREATE TABLE Users (
     id TEXT PRIMARY KEY CHECK (id SIMILAR TO '[0-9]{10}'),
+);
+
+CREATE TABLE SavedData (
+    id TEXT,
     velocity FLOAT,
-    accuracy FLOAT
+    accuracy FLOAT,
+    FOREIGN KEY (id) REFERENCES Users(id),
+    PRIMARY KEY (id, velocity, accuracy)
 );
