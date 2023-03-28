@@ -4,7 +4,7 @@ from calibration_module import calibrate_cross
 from measure_module import measure_throw
 from velocity_module import velocity
 from accuracy_module import accuracy
-from flask import Flask, render_template, request, redirect, url_for, flash, session, get_flashed_messages, current_app, abort
+from flask import Flask, render_template, request, redirect, url_for, flash, session, get_flashed_messages, current_app, abort, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from flask_migrate import Migrate
@@ -12,6 +12,10 @@ from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from urllib.parse import urlparse, urljoin
 from datetime import timedelta, datetime
+from PIL import Image
+import base64
+from io import BytesIO
+import uuid
 
 
 app = Flask(__name__)
@@ -35,6 +39,40 @@ def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
+def encode_image_base64(img):
+    img_pil = Image.fromarray(img)
+    buffered = BytesIO()
+    img_pil.save(buffered, format="JPEG")
+    img_base64 = base64.b64encode(buffered.getvalue()).decode()
+    return img_base64
+
+def create_video_from_frames(frames, frame_rate, output_path):
+    # Get the dimensions of the frames
+    height, width, _ = frames[0].shape
+
+    # Define the codec and create VideoWriter object
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_path, fourcc, frame_rate, (width, height))
+
+    # Write the frames to the video file
+    for frame in frames:
+        out.write(frame)
+
+    # Release the VideoWriter object
+    out.release()
+
+    # Check if the video file has been created successfully
+    if not os.path.exists(output_path) or os.path.getsize(output_path) == 0:
+        print("Error: Video file not created or is empty")
+        return False
+
+    return True
+
+
+def generate_unique_filename(extension=".mp4"):
+    unique_id = uuid.uuid4().hex
+    return f"{unique_id}{extension}"
 
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -138,6 +176,10 @@ def calibration():
 
     return render_template('calibration.html')
 
+@app.route('/static/videos/<path:video_file>')
+def serve_video(video_file):
+    return send_from_directory('static/videos', video_file)
+
 
 @app.route('/measure', methods=['GET', 'POST'])
 @login_required
@@ -168,8 +210,33 @@ def measure():
             cal_y_floor = calibration_results['y_floor']
 
             # Run the measure function with the calibration results and the file paths
-            x_list_side, y_list_side = measure_throw(file_path1, ball_radius_side, 'side')
-            x_list_floor, y_list_floor = measure_throw(file_path2, ball_radius_floor, 'floor')
+            x_list_side, y_list_side, frames_side = measure_throw(file_path1, ball_radius_side, 'side')
+            x_list_floor, y_list_floor, frames_floor = measure_throw(file_path2, ball_radius_floor, 'floor')
+
+
+            video_filename1 = generate_unique_filename()
+            video_filename2 = generate_unique_filename()
+
+            output_file1 = f"static/videos/{video_filename1}"
+            output_file2 = f"static/videos/{video_filename2}"
+            # Create a video from the frames
+            video_side_created = create_video_from_frames(frames_side, frame_rate, output_file1)
+            if not video_side_created:
+                print("Error: Could not create video from frames")
+                flash('Error creating video from frames (side view).', 'error')
+                return render_template('measure.html', throw_info=throw_info)
+            video_floor_created = create_video_from_frames(frames_floor, frame_rate, output_file2)
+            if not video_floor_created:
+                print("Error: Could not create video from frames")
+                flash('Error creating video from frames (floor view).', 'error')
+                return render_template('measure.html', throw_info=throw_info)
+
+
+
+
+            # Convert the frames to Base64-encoded images
+            frames_side_base64 = [encode_image_base64(frame) for frame in frames_side]
+            frames_floor_base64 = [encode_image_base64(frame) for frame in frames_floor]
 
             if len(x_list_side) and len(x_list_floor) > 3:
                 throw_velocity, throw_ok = velocity(x_list_side, y_list_side, x_list_floor, y_list_floor, ball_radius_side, ball_radius_floor, frame_rate)
@@ -185,8 +252,9 @@ def measure():
                     flash('Throw successfully measured!', 'success')
                     session['measure_results'] = {'x_list_side': x_list_side, 'y_list_side': y_list_side, 'x_list_floor': x_list_floor, 'y_list_floor': y_list_floor}
                     session['throw_info'] = {'velocity': throw_velocity, 'accuracy_x': accuracy_x, 'accuracy_y': accuracy_y, 'total_distance': total_distance}
-                return render_template('measure.html', throw_info=throw_info)
-            
+                
+                return render_template('measure.html', throw_info=throw_info, frames_side=frames_side_base64, frames_floor=frames_floor_base64, video_file1=video_filename1, video_file2=video_filename2)
+
             else:
                 session.pop('_flashes', None)
                 flash('Throw could not be measured. Choose another video.', 'error')

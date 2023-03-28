@@ -31,68 +31,75 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
                 y_side.remove(element)
             else:
                 break
-
-        count = 0
+        # print(x_floor)
+        # print(y_floor)
+        # print(x_side)
+        # print(y_side)
+        
+        num_nodet_frames = 0
+        steps = 1
         for element in range(0, len(x_floor)):
             if x_floor[element] == 0:
-                count += 1
-                continue
-            if count == 1:
-                x_floor[element-count] = x_floor[element-count-1] - (x_floor[element-count-1] - x_floor[element])/(count+1)
-                count = 0
-            elif count == 2:
-                x_floor[element-count] = x_floor[element-count-1] - (x_floor[element-count-1] - x_floor[element])/(count+1)
-                x_floor[element-count+1] = x_floor[element-count] - (x_floor[element-count-1] - x_floor[element])/(count+1)
-                count = 0
-            elif count > 2:
-                throw_ok = False
-                print('Kastet kunde ej detekterades väl nog')
-        count = 0
+                num_nodet_frames += 1
+            else:
+                if num_nodet_frames/len(x_floor) > 0.5:
+                    throw_ok = False
+                    print('Kastet kunde ej detekterades väl nog')
+                else:
+                    while steps <= num_nodet_frames:
+                        x_floor[element-steps] = x_floor[element-num_nodet_frames-1] + ((x_floor[element] - x_floor[element-num_nodet_frames-1])*(num_nodet_frames+1-steps))/(num_nodet_frames+1)
+                        steps += 1
+                    num_nodet_frames = 0
+                    steps = 1
+        num_nodet_frames = 0
+        steps = 1
         for element in range(0, len(y_floor)):
             if y_floor[element] == 0:
-                count += 1
-                continue
-            if count == 1:
-                y_floor[element-count] = y_floor[element-count-1] - (y_floor[element-count-1] - y_floor[element])/(count+1)
-                count = 0
-            elif count == 2:
-                y_floor[element-count] = y_floor[element-count-1] - (y_floor[element-count-1] - y_floor[element])/(count+1)
-                y_floor[element-count+1] = y_floor[element-count] - (y_floor[element-count-1] - y_floor[element])/(count+1)
-                count = 0
-            elif count > 2:
-                throw_ok = False
-                print('Kastet kunde ej detekterades väl nog')
-        count = 0
+                num_nodet_frames += 1
+            else:
+                if num_nodet_frames/len(y_floor) > 0.5:
+                    throw_ok = False
+                    print('Kastet kunde ej detekterades väl nog')
+                else:
+                    while steps <= num_nodet_frames:
+                        y_floor[element-steps] = y_floor[element-num_nodet_frames-1] + ((y_floor[element] - y_floor[element-num_nodet_frames-1])*(num_nodet_frames+1-steps))/(num_nodet_frames+1)
+                        steps += 1
+                    num_nodet_frames = 0
+                    steps = 1
+        num_nodet_frames = 0
+        steps = 1
         for element in range(0, len(x_side)):
             if x_side[element] == 0:
-                count += 1
-                continue
-            if count == 1:
-                x_side[element-count] = x_side[element-count-1] + (x_side[element] - x_side[element-count-1])/(count+1)
-                count = 0
-            elif count == 2:
-                x_side[element-count] = x_side[element-count-1] + (x_side[element] - x_side[element-count-1])/(count+1)
-                x_side[element-count+1] = x_side[element-count] + (x_side[element] - x_side[element-count-1])/(count+1)
-                count = 0
-            elif count > 2:
-                throw_ok = False
-                print('Kastet kunde ej detekterades väl nog')
-        count = 0
+                num_nodet_frames += 1
+            else:
+                if num_nodet_frames/len(x_side) > 0.5:
+                    throw_ok = False
+                    print('Kastet kunde ej detekterades väl nog')
+                else:
+                    while steps <= num_nodet_frames:
+                        x_side[element-steps] = x_side[element-num_nodet_frames-1] + ((x_side[element] - x_side[element-num_nodet_frames-1])*(num_nodet_frames+1-steps))/(num_nodet_frames+1)
+                        steps += 1
+                    num_nodet_frames = 0
+                    steps = 1
+        num_nodet_frames = 0
+        steps = 1
         for element in range(0, len(y_side)):
             if y_side[element] == 0:
-                count += 1
-                continue
-            if count == 1:
-                y_side[element-count] = y_side[element-count-1] - (y_side[element-count-1] - y_side[element])/(count+1)
-                count = 0
-            elif count == 2:
-                y_side[element-count] = y_side[element-count-1] - (y_side[element-count-1] - y_side[element])/(count+1)
-                y_side[element-count+1] = y_side[element-count] - (y_side[element-count-1] - y_side[element])/(count+1)
-                count = 0
-            elif count > 2:
-                throw_ok = False
-                print('Kastet kunde ej detekterades väl nog')
-
+                num_nodet_frames += 1
+            else:
+                if num_nodet_frames/len(y_side) > 0.5:
+                    throw_ok = False
+                    print('Kastet kunde ej detekterades väl nog')
+                else:
+                    while steps <= num_nodet_frames:
+                        y_side[element-steps] = y_side[element-num_nodet_frames-1] + ((y_side[element] - y_side[element-num_nodet_frames-1])*(num_nodet_frames+1-steps))/(num_nodet_frames+1)
+                        steps += 1
+                    num_nodet_frames = 0
+                    steps = 1
+        # print(x_floor)
+        # print(y_floor)
+        # print(x_side)
+        # print(y_side)
         diff = len(x_side) - len(y_floor)
 
         if diff < 0:
@@ -114,6 +121,7 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
             distance_between_frames = np.sqrt((converter_side*(x_side[k]-x_side[k-1]))**2+(converter_floor*(y_floor[k]-y_floor[k-1]))**2+(converter_side*(y_side[k]-y_side[k-1]))**2)
             velocity.append(3.6 / 100 * distance_between_frames * frame_rate) 
         if len(velocity) > 0:
+            #print(velocity)
             mean_velocity = sum(velocity) / len(velocity)
             print('Hasitgheten för bollen var: ' + str(mean_velocity) + ' km/h')
             return round(mean_velocity, 1), throw_ok

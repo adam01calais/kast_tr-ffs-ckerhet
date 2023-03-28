@@ -32,7 +32,7 @@ def measure_throw(video_path, ball_radius, camera_angle):
         h_list = []
 
         count = 0
-
+        frame_list = []
         # Loopar igenom alla frames i videon tills bollen studsar mot väggen
         while(video.isOpened()):
 
@@ -77,10 +77,11 @@ def measure_throw(video_path, ball_radius, camera_angle):
                     box_right_corner_x = int(center_x + ball_radius)
                     box_right_corner_y = int(center_y - ball_radius)
                     cv2.rectangle(frame, (box_left_corner_x, box_left_corner_y), (box_right_corner_x, box_right_corner_y), (0, 0, 255), 2)
+                    frame_list.append(frame)
                     break
             
             # Spelar upp nuvarande frame
-            cv2.imshow('frame', frame)
+            # cv2.imshow('frame', frame)
 
             # Villkor för när bollen har träffat väggen och videon ska sluta spelas upp
             # Om videon kommer från sidokameran:
@@ -181,14 +182,14 @@ def measure_throw(video_path, ball_radius, camera_angle):
 
 
             # Videon slutar också spelas upp om användaren trycker på tangenten 'q'
-            key = cv2.waitKey(1)
-            if key == ord('q'):
-                break
+            # key = cv2.waitKey(1)
+            # if key == ord('q'):
+            #     break
 
         # Stänger ner videon
-        video.release()
-        cv2.destroyAllWindows() 
+        # video.release()
+        # cv2.destroyAllWindows() 
 
         # Returnerar en lista vardera över x- % y-koordinater för de frames då bollen är i bild
         #print(x_list, y_list)
-        return x_list, y_list
+        return x_list, y_list, frame_list

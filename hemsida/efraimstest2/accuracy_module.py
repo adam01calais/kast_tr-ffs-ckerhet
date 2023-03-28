@@ -13,6 +13,6 @@ def accuracy(x_floor, y_side, ball_radius_side, ball_radius_floor, cross_positio
         diff_y = converter_side * (cross_coord_y-y_coord)
         diff_tot = np.sqrt(diff_x**2 + diff_y**2)
         print('Bollens avstånd från målet i x-led: ' + str(diff_x) + ' cm')
-        print('Bollens avstånd från målet i y_led: ' + str(diff_y) + ' cm')
+        print('Bollens avstånd från målet i y-led: ' + str(diff_y) + ' cm')
         print('Bollens totala avstånd från målet: ' + str(diff_tot) + ' cm')
         return diff_x, diff_y, round(diff_tot, 1)
