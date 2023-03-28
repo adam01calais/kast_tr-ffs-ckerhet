@@ -52,12 +52,16 @@ body{
 .welcome-text h1{
     text-align: center;
     color: #fff;
-    text-transform: uppercase;
+   
     font-size: 60px;
 }
 
 .welcome-text p{
     color: #fff;
+}
+
+.welcome-area{
+    margin-top: 20px;
 }
 
 .welcome-area li a{
