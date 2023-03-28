@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calibration</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Satisfy&display=swap" />
+    <link href='https://fonts.googleapis.com/css?family=Dancing Script' rel='stylesheet'>
 </head>
 <body>
     <div class="background-image"></div>
@@ -42,9 +42,9 @@
         <h2>Calibration Process</h2>
         <p>Follow these steps to calibrate your camera setup:</p>
         <ol>
-            <li>Hold a dodgeball at the center of the target on the wall, making sure it is clearly visible from both cameras.</li>
-            <li>Simultaneously record a short video (5 seconds is sufficient) of the dodgeball from each camera, making sure that the entire object is visible in the frame. Both cameras should capture footage during the same 5-second time frame, but their recordings should be separate.</li>
-            <li>Upload the calibration videos from each camera using the form below.</li>
+            <li style="margin-bottom: 4px;">Hold a dodgeball at the center of the target on the wall, making sure it is clearly visible from both cameras.</li>
+            <li style="margin-bottom: 4px;">Simultaneously record a short video (5 seconds is sufficient) of the dodgeball from each camera, making sure that the entire object is visible in the frame. Both cameras should capture footage during the same 5-second time frame, but their recordings should be separate.</li>
+            <li style="margin-bottom: 4px;">Upload the calibration videos from each camera using the form below.</li>
             <li>After uploading the videos, our system will analyze the footage and calculate the necessary calibration parameters for your camera setup.</li>
         </ol>
         <p>Once calibration is complete, you can proceed to measure your dodgeball throws.</p>
@@ -54,12 +54,12 @@
             <div class="form-group">
                 <label for="sideCamera">Side Camera: </label>
                 <input type="file" class="form-control-file" id="sideCamera" name="sideCamera" required>
-                <small class="form-text text-muted" style="font-size: 10px; margin-top: -10px;">(Accepted formats: .mp4, .mov, .avi)</small>
+                <small class="form-text text-muted" style="font-size: 10px;">(Accepted formats: .mp4, .mov, .avi)</small>
             </div>
-            <div class="form-group" style="margin-top: 20px;">
-                <label for="underneathCamera">Underneath Camera:</label>
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="underneathCamera">Bottom Camera:</label>
                 <input type="file" class="form-control-file" id="underneathCamera" name="underneathCamera" required>
-                <small class="form-text text-muted" style="font-size: 10px; margin-top: -10px;">(Accepted formats: .mp4, .mov, .avi)</small>
+                <small class="form-text text-muted" style="font-size: 10px;">(Accepted formats: .mp4, .mov, .avi)</small>
             </div>
             <button type="submit" id="calibrate-btn">Calibrate</button>
         </form>
@@ -82,7 +82,7 @@
       
         function addButtonLoader(button, form) {
             form.addEventListener('submit', function () {
-                button.innerHTML += ' <span class="loader-container"><div class="loader"></div></span>';
+                button.innerHTML += `<span class="loader-container"><div class="loader"></div></span>`;
                 button.classList.add('loading');
                 button.disabled = true;
             });
@@ -105,17 +105,5 @@
           }
         });
     </script>
-      
-      
-    <!-- <script>
-        const calibrateForm = document.querySelector('form[method="POST"]');
-        const calibrateBtn = document.getElementById('calibrate-btn');
-      
-        calibrateForm.addEventListener('submit', function () {
-          calibrateBtn.innerHTML = 'Calibrate <div class="loader-container"><div class="loader"></div></div>';
-          calibrateBtn.disabled = true;
-          //calibrateBtn.style.minWidth = '120px'; // Ensure the button doesn't shrink when the loader is added
-        });
-    </script>   -->
 </body>
 </html>

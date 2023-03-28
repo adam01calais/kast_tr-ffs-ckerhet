@@ -25,9 +25,9 @@ def calibrate_cross(video_path):
         video.release()
         cv2.destroyAllWindows()
 
-        rf = Roboflow(api_key="HEfNlI5lkTBazBknN8jz")
-        project = rf.workspace().project("footballs-1trlz")
-        model = project.version(3).model
+        rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq") # HEfNlI5lkTBazBknN8jz
+        project = rf.workspace().project("ball-images")
+        model = project.version(2).model
 
         list_of_images_numbers = list(range(1, i, frame_rate))
 
@@ -47,7 +47,7 @@ def calibrate_cross(video_path):
                 continue
             if len(y) < 2:
                 continue
-            if max(abs(x[-2] - x[-1]), abs(y[-2] - y[-1])) < 3:
+            if max(abs(x[-2] - x[-1]), abs(y[-2] - y[-1])) < 5:
                 print('Calibration for camera done successfully')
                 break
 

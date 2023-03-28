@@ -134,7 +134,7 @@ def calibration():
             flash('Calibration successful!', 'success')
         else:
             session.pop('_flashes', None)
-            flash('The dodgeball could not be detected. Proceed with a new calibration video!', 'error')
+            flash('The dodgeball could not be detected. Choose a new calibration video.', 'error')
 
     return render_template('calibration.html')
 
@@ -172,25 +172,28 @@ def measure():
             x_list_floor, y_list_floor = measure_throw(file_path2, ball_radius_floor, 'floor')
 
             if len(x_list_side) and len(x_list_floor) > 3:
-                throw_velocity = velocity(x_list_side, y_list_side, x_list_floor, y_list_floor, ball_radius_side, ball_radius_floor, frame_rate)
+                throw_velocity, throw_ok = velocity(x_list_side, y_list_side, x_list_floor, y_list_floor, ball_radius_side, ball_radius_floor, frame_rate)
+                if throw_ok == False:
+                    flash('Throw could not be measured. Choose another video.', 'error')
+                    return render_template('measure.html', throw_info=throw_info)
                 if throw_velocity == None:
                     session.pop('_flashes', None)
-                    flash('Throw could not be measured. Make another throw!', 'error')
+                    flash('Throw could not be measured. Choose another video.', 'error')
                 else:
                     accuracy_x, accuracy_y, total_distance = accuracy(x_list_floor, y_list_side, ball_radius_side, ball_radius_floor, cal_x_floor, cal_y_floor, cal_x_side, cal_y_side)
                     session.pop('_flashes', None)
-                    flash('Throw successfully measured', 'success')
+                    flash('Throw successfully measured!', 'success')
                     session['measure_results'] = {'x_list_side': x_list_side, 'y_list_side': y_list_side, 'x_list_floor': x_list_floor, 'y_list_floor': y_list_floor}
                     session['throw_info'] = {'velocity': throw_velocity, 'accuracy_x': accuracy_x, 'accuracy_y': accuracy_y, 'total_distance': total_distance}
-                return render_template('measure.html', throw_info=session['throw_info'])
+                return render_template('measure.html', throw_info=throw_info)
             
             else:
                 session.pop('_flashes', None)
-                flash('Throw could not be measured. Make another throw!', 'error')
+                flash('Throw could not be measured. Choose another video.', 'error')
                 return render_template('measure.html', throw_info=throw_info)
         else:
             session.pop('_flashes', None)
-            flash("Please calibrate before measuring.", 'error')
+            flash("You need to calibrate before measuring.", 'error')
             return render_template('measure.html', throw_info=throw_info)
     else:
         return render_template('measure.html', throw_info=throw_info)
@@ -204,4 +207,4 @@ def how_it_works():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5002)

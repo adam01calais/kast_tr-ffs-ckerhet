@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Measure</title>
     <link rel="stylesheet" href="/static/css/style.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Satisfy&display=swap" />
+    <link href='https://fonts.googleapis.com/css?family=Dancing Script' rel='stylesheet'>
 </head>
 <body>
     <div class="background-image"></div>
@@ -37,18 +37,20 @@
     </nav>
     <div class="container">
         <h1>Measure Throw</h1>
+        <p>To accurately gauge your dodgeball throw, please upload videos captured from both side and bottom perspectives, and include the frame rate for the videos. Our system will analyze the videos and provide you with the velocity, as well as the accuracy of your throw relative to the target.</p>
+        <h2>Upload Throw Videos</h2>
         <form action="/measure" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="file1">Side Camera:</label>
                 <input type="file" id="file1" name="file1" class="form-control-file" accept=".mp4, .mov, .avi" required>
-                <small class="form-text text-muted" style="font-size: 10px; margin-top: -10px;">(Accepted formats: .mp4, .mov, .avi)</small>
+                <small class="form-text text-muted" style="font-size: 10px;">(Accepted formats: .mp4, .mov, .avi)</small>
             </div>
-            <div class="form-group" style="margin-top: 20px;">
-                <label for="file2">Underneath Camera:</label>
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="file2">Bottom Camera:</label>
                 <input type="file" id="file2" name="file2" class="form-control-file" accept=".mp4, .mov, .avi" required>
-                <small class="form-text text-muted" style="font-size: 10px; margin-top: -10px;">(Accepted formats: .mp4, .mov, .avi)</small>
+                <small class="form-text text-muted" style="font-size: 10px;">(Accepted formats: .mp4, .mov, .avi)</small>
             </div>
-            <div class="form-group" style="margin-top: 20px;">
+            <div class="form-group" style="margin-top: 15px;">
                 <label for="frame_rate">Frame rate (fps):</label>
                 <input type="number" id="frame_rate" name="frame_rate" class="form-control" required>
             </div>
@@ -56,25 +58,39 @@
         </form>
 
         {% if throw_info.velocity and throw_info.accuracy_x and throw_info.accuracy_y and throw_info.total_distance %}
-        <h3>Throw Results</h3>
-        <p>Velocity: {{ throw_info.velocity }} km/h</p>
-        <p>Distance from center: {{ throw_info.total_distance }} cm</p>
-
-        <svg height="410" width="410">
-            <circle cx="205" cy="205" r="200" fill="black"  />
-            <circle cx="205" cy="205" r="180" fill="white"  />
-            <circle cx="205" cy="205" r="160" fill="black"  />
-            <circle cx="205" cy="205" r="140" fill="white"  />
-            <circle cx="205" cy="205" r="120" fill="black"  />
-            <circle cx="205" cy="205" r="100" fill="white"  />
-            <circle cx="205" cy="205" r="80" fill="black"  />
-            <circle cx="205" cy="205" r="60" fill="white" />
-            <circle cx="205" cy="205" r="40" fill="black" />
-            <circle cx="205" cy="205" r="20" fill="white"  />
-            <circle cx="205" cy="205" r="3" fill="black" />
-            <circle cx="{{ 205 + (throw_info.accuracy_x * 2) }}" cy="{{ 205 + (throw_info.accuracy_y * 2) }}" r="5" fill="red" />
-        </svg>
-
+        <div class="results-container">
+            <div class="results-text">
+                <h3>Throw Results:</h3>
+                <p>Velocity: {{ throw_info.velocity }} km/h</p>
+                <p>Distance from center: {{ throw_info.total_distance }} cm</p>
+            </div>
+            <div class="svg-container">
+                <svg height="450" width="450">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:rgb(181, 179, 179);stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:rgb(0, 0, 0);stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="225" cy="225" r="200" fill="white" stroke="black" />
+                    <circle cx="225" cy="225" r="180" fill="white" stroke="black" />
+                    <circle cx="225" cy="225" r="160" fill="black" stroke="black" />
+                    <circle cx="225" cy="225" r="140" fill="black" stroke="white" />
+                    <circle cx="225" cy="225" r="120" fill="deepskyblue" stroke="black" />
+                    <circle cx="225" cy="225" r="100" fill="deepskyblue" stroke="black" />
+                    <circle cx="225" cy="225" r="80" fill="red" stroke="black" />
+                    <circle cx="225" cy="225" r="60" fill="red" stroke="black" />
+                    <circle cx="225" cy="225" r="40" fill="yellow" stroke="black" />
+                    <circle cx="225" cy="225" r="20" fill="yellow" stroke="black" />
+                    <circle cx="225" cy="225" r="1" fill="black" />
+                    <circle cx="{{ 225 + (throw_info.accuracy_x * 2) }}" cy="{{ 225 + (throw_info.accuracy_y * 2) }}" r="6" fill="url(#grad1)" stroke="white" />
+                    <line x1="25" y1="20" x2="425" y2="20" stroke="black" stroke-width="2" />
+                    <text x="205" y="12" font-size="14px" fill="black">200 cm</text>
+                    <line x1="20" y1="25" x2="20" y2="425" stroke="black" stroke-width="2" />
+                    <text x="15" y="245" font-size="14px" fill="black" transform="rotate(-90,15,245)">200 cm</text>
+                </svg>
+            </div>
+        </div>
         {% endif %}
     </div>
     <script>
@@ -117,18 +133,5 @@
           }
         });
     </script>
-      
-      
-      
-    <!-- <script>
-        const measureForm = document.querySelector('form[method="POST"]');
-        const measureBtn = document.getElementById('measure-btn');
-
-        measureForm.addEventListener('submit', function () {
-            measureBtn.innerHTML = 'Measure <div class="loader-container"><div class="loader"></div></div>';
-            measureBtn.disabled = true;
-            //measureBtn.style.minWidth = '140px'; // Ensure the button doesn't shrink when the loader is added
-        });
-    </script>     -->
 </body>
 </html>

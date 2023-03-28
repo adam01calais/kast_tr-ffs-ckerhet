@@ -23,9 +23,12 @@ body {
 }
 
 h1 {
-    color: #b71c1c;
+    color: #ba2020;
     text-align: center;
+    font-family: 'Spot';
+    font-size: 40px;
     padding: 20px 0;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
 /* Navigation */
@@ -53,10 +56,10 @@ nav ul li a:hover {
     color: #b71c1c;
 }
 nav .website-name {
-    color: #b71c1c;
-    font-size: 1.5rem;
-    font-family: 'Satisfy';
-    text-transform: uppercase;
+    color: #ba2020;
+    font-size: 2.5rem;
+    font-family: 'Dancing Script';
+    /* text-transform: uppercase; */
     letter-spacing: 0.1em;
     text-decoration: none;
 }
@@ -86,28 +89,31 @@ form label {
 }
 
 form input {
-    width: 100%;
+    width: 40%;
     padding: 5px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
 form button {
-    background-color: #b71c1c;
+    background-color: #b11d1d;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
     color: #ffffff;
+    font-size: 16px;
     padding: 10px 20px;
-    border: none;
+    border: 2px solid #000000;
+    border-radius: 8px;
     cursor: pointer;
     margin-top: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
-    min-width: 120px;
+    min-width: 140px;
     height: 40px;
 }
 
-
 form button:hover {
-    background-color: #d32f2f;
+    background-color: #f70303;
+    border-color: grey;
 }
 
 /* Flash messages */
@@ -115,17 +121,15 @@ form button:hover {
 .alert-success {
     background-color: #D4EDDA;
     color: #155724;
-    border-color: #C3E6CB;
+    border-color: #155724;
     padding: 10px;
-    margin-bottom: 10px;
     border-radius: 5px;
 }
 .alert-error {
     background-color: #F8D7DA;
     color: #842029;
-    border-color: #F5C6CB;
+    border-color: #842029;
     padding: 10px;
-    margin-bottom: 10px;
     border-radius: 5px;
 }
 
@@ -153,13 +157,24 @@ button.loading {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 100px;
 }
 
-#calibrate-btn {
-    width: 150px;
+.results-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 2rem;
 }
-  
+
+.results-text {
+    text-align: center;
+    margin-right: 1rem;
+}
+
+.svg-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+}
+

@@ -2,6 +2,7 @@ import numpy as np
 
 def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_floor, frame_rate):
 
+        throw_ok = True
         # Skapar en lista för hastigheten
         velocity = []
 
@@ -44,6 +45,7 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
                 x_floor[element-count+1] = x_floor[element-count] - (x_floor[element-count-1] - x_floor[element])/(count+1)
                 count = 0
             elif count > 2:
+                throw_ok = False
                 print('Kastet kunde ej detekterades väl nog')
         count = 0
         for element in range(0, len(y_floor)):
@@ -58,6 +60,7 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
                 y_floor[element-count+1] = y_floor[element-count] - (y_floor[element-count-1] - y_floor[element])/(count+1)
                 count = 0
             elif count > 2:
+                throw_ok = False
                 print('Kastet kunde ej detekterades väl nog')
         count = 0
         for element in range(0, len(x_side)):
@@ -72,6 +75,7 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
                 x_side[element-count+1] = x_side[element-count] + (x_side[element] - x_side[element-count-1])/(count+1)
                 count = 0
             elif count > 2:
+                throw_ok = False
                 print('Kastet kunde ej detekterades väl nog')
         count = 0
         for element in range(0, len(y_side)):
@@ -86,6 +90,7 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
                 y_side[element-count+1] = y_side[element-count] - (y_side[element-count-1] - y_side[element])/(count+1)
                 count = 0
             elif count > 2:
+                throw_ok = False
                 print('Kastet kunde ej detekterades väl nog')
 
         diff = len(x_side) - len(y_floor)
@@ -111,11 +116,11 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
         if len(velocity) > 0:
             mean_velocity = sum(velocity) / len(velocity)
             print('Hasitgheten för bollen var: ' + str(mean_velocity) + ' km/h')
-            return round(mean_velocity, 1)
+            return round(mean_velocity, 1), throw_ok
         else:
             # Handle the case when the velocity list is empty
             print("No throw detected")
             mean_velocity = None 
-            return mean_velocity
+            return mean_velocity, throw_ok
         
         

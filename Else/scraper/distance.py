@@ -9,4 +9,4 @@ o = i*tan(1)/(0.000000560*OnePlus8.apperature*i-tan(1))
 
 print(OnePlus8.apperature)
 print(OnePlus8.megaPixels)
-print(o.real)
+print(abs(o.real))

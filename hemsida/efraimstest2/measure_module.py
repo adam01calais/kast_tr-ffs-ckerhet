@@ -80,7 +80,7 @@ def measure_throw(video_path, ball_radius, camera_angle):
                     break
             
             # Spelar upp nuvarande frame
-            #cv2.imshow('frame', frame)
+            cv2.imshow('frame', frame)
 
             # Villkor för när bollen har träffat väggen och videon ska sluta spelas upp
             # Om videon kommer från sidokameran:
@@ -190,4 +190,5 @@ def measure_throw(video_path, ball_radius, camera_angle):
         cv2.destroyAllWindows() 
 
         # Returnerar en lista vardera över x- % y-koordinater för de frames då bollen är i bild
+        #print(x_list, y_list)
         return x_list, y_list
