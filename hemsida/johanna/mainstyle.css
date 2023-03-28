@@ -22,14 +22,14 @@ body{
 
 
 .welcome-text h1{
-    text-align: center;
-    color: #fff;
     
+    color: #fff;
+    padding: 20px;
     font-size: 40px;
 }
 
 .welcome-text p{
-    text-align: center;
+    padding: 20px;
     color: #fff;
     margin-top: 20px;
 }
@@ -40,21 +40,27 @@ body{
 }
 
 .input1 {
-    text-align: center;
+    padding: 20px;
+   
 }
 
 .input2 {
-    text-align: center;
+    padding: 20px;
+   
 }
 
+
+
+
 .nav-area{
-    text-align: center;
+    float: right;
     list-style: none;
     margin-top: 20px;
     padding-right: 10px;
 }
 
 .nav-area li{
+
     display: inline-block;
 }
 
