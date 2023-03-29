@@ -107,6 +107,7 @@ def measure_throw(video_path, ball_radius, camera_angle):
                             del y_list[-1:]
                             del w_list[-1:]
                             del h_list[-1:]
+                            del frame_list[-1:]
                             break
 
                 # om videon är i formatet portrait:
@@ -130,6 +131,7 @@ def measure_throw(video_path, ball_radius, camera_angle):
                             del y_list[-1:]
                             del w_list[-1:]
                             del h_list[-1:]
+                            del frame_list[-1:]
                             break
 
             # Om videon kommer från golvkameran:
@@ -155,6 +157,7 @@ def measure_throw(video_path, ball_radius, camera_angle):
                             del y_list[-1:]
                             del w_list[-1:]
                             del h_list[-1:]
+                            del frame_list[-1:]
                             break
 
                 # om videon är i formatet portrait:
@@ -178,6 +181,7 @@ def measure_throw(video_path, ball_radius, camera_angle):
                             del y_list[-1:]
                             del w_list[-1:]
                             del h_list[-1:]
+                            del frame_list[-1:]
                             break
 
 

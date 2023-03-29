@@ -91,37 +91,16 @@
                 </svg>
             </div>
         </div>
-        {% endif %}
-
-        <video id="video-player" width="640" height="480" controls>
-            <source src="{{ url_for('serve_video', video_file=video_file) }}" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        <button id="play-button" onclick="playVideo()">Play</button>
-        <video id="video-player" width="640" height="480" controls>
-            <source src="{{ url_for('serve_video', video_file=video_file) }}" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        <button id="play-button" onclick="playVideo()">Play</button>
-        
-
-        <!-- {% if frames_side %}
-        <h3>Side Camera Frames:</h3>
-        <div>
-            {% for frame in frames_side %}
-            <img src="data:image/jpeg;base64,{{ frame }}" alt="Side Camera Frame" style="width: 300px; height: auto; margin: 5px;">
-            {% endfor %}
+        <h3>Throw Visualization</h3>
+        <div class="throw-gif-wrapper">
+            <p class="camera-label">Side Camera</p>
+            <img class="throw-gif" id="side-view" src="data:image/gif;base64,{{ frames_side_base64 }}" alt="Side View GIF">
+        </div>
+        <div class="throw-gif-wrapper">
+            <p class="camera-label">Bottom Camera</p>
+            <img class="throw-gif" id="floor-view" src="data:image/gif;base64,{{ frames_floor_base64 }}" alt="Floor View GIF">
         </div>
         {% endif %}
-
-        {% if frames_floor %}
-        <h3>Underneath Camera Frames:</h3>
-        <div>
-            {% for frame in frames_floor %}
-            <img src="data:image/jpeg;base64,{{ frame }}" alt="Underneath Camera Frame" style="width: 300px; height: auto; margin: 5px;">
-            {% endfor %}
-        </div>
-        {% endif %} -->
     </div>
     <script>
         function initFlashMessagesObserver() {
@@ -162,6 +141,43 @@
             addButtonLoader(measureBtn, measureForm);
           }
         });
+    </script>
+    <script>
+        const framesSide = {{ frames_side_base64|tojson }};
+        const framesFloor = {{ frames_floor_base64|tojson }};
+        const gifDuration = 3000;  // Adjust this value to set the desired duration for both GIFs in milliseconds
+        let sideFrameIndex = 0;
+        let floorFrameIndex = 0;
+
+        const sideView = document.getElementById("side-view");
+        const floorView = document.getElementById("floor-view");
+
+        function updateFrame() {
+            sideView.src = 'data:image/png;base64,' + framesSide[sideFrameIndex];
+            floorView.src = 'data:image/png;base64,' + framesFloor[floorFrameIndex];
+        }
+
+        function updateFrames(timestamp) {
+            const sideProgress = (timestamp % gifDuration) / gifDuration;
+            const floorProgress = (timestamp % gifDuration) / gifDuration;
+
+            const newSideFrameIndex = Math.floor(sideProgress * framesSide.length);
+            const newFloorFrameIndex = Math.floor(floorProgress * framesFloor.length);
+
+            if (newSideFrameIndex !== sideFrameIndex) {
+                sideFrameIndex = newSideFrameIndex;
+                updateFrame();
+            }
+
+            if (newFloorFrameIndex !== floorFrameIndex) {
+                floorFrameIndex = newFloorFrameIndex;
+                updateFrame();
+            }
+
+            requestAnimationFrame(updateFrames);
+        }
+
+        requestAnimationFrame(updateFrames);
     </script>
 </body>
 </html>
