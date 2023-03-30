@@ -157,6 +157,8 @@ def calibration():
 @app.route('/measure', methods=['GET', 'POST'])
 @login_required
 def measure():
+    # frames_side_base64 = session.get('frames_side_base64', [])
+    # frames_floor_base64 = session.get('frames_floor_base64', [])
     frames_side_base64 = []
     frames_floor_base64 = []
     frame_rate = 0
@@ -193,6 +195,10 @@ def measure():
             frames_side_base64 = [encode_image_base64(frame) for frame in frames_side]
             frames_floor_base64 = [encode_image_base64(frame) for frame in frames_floor]
 
+            if frames_side and frames_floor:
+                session['frames_side_base64'] = [encode_image_base64(frame) for frame in frames_side]
+                session['frames_floor_base64'] = [encode_image_base64(frame) for frame in frames_floor]
+
             if len(x_list_side) and len(x_list_floor) > 3:
                 throw_velocity, throw_ok = velocity(x_list_side, y_list_side, x_list_floor, y_list_floor, ball_radius_side, ball_radius_floor, frame_rate)
                 if throw_ok == False:
@@ -205,9 +211,9 @@ def measure():
                     accuracy_x, accuracy_y, total_distance = accuracy(x_list_floor, y_list_side, ball_radius_side, ball_radius_floor, cal_x_floor, cal_y_floor, cal_x_side, cal_y_side)
                     session.pop('_flashes', None)
                     flash('Throw successfully measured!', 'success')
-                    session['measure_results'] = {'x_list_side': x_list_side, 'y_list_side': y_list_side, 'x_list_floor': x_list_floor, 'y_list_floor': y_list_floor}
-                    session['throw_info'] = {'velocity': throw_velocity, 'accuracy_x': accuracy_x, 'accuracy_y': accuracy_y, 'total_distance': total_distance}
-                
+                    throw_info = {'velocity': throw_velocity, 'accuracy_x': accuracy_x, 'accuracy_y': accuracy_y, 'total_distance': total_distance}
+                    session['throw_info'] = throw_info
+
                 return render_template('measure.html', throw_info=throw_info, frames_side_base64=frames_side_base64, frames_floor_base64=frames_floor_base64, frame_rate=frame_rate)
 
             else:

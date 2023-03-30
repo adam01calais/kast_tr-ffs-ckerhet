@@ -56,8 +56,7 @@
             </div>
             <button type="submit" id="measure-btn">Measure</button>
         </form>
-
-        {% if throw_info.velocity and throw_info.accuracy_x and throw_info.accuracy_y and throw_info.total_distance %}
+        {% if throw_info.velocity is not none and throw_info.accuracy_x is not none and throw_info.accuracy_y is not none and throw_info.total_distance is not none %}
         <div class="results-container">
             <div class="results-text">
                 <h3>Throw Results:</h3>
@@ -92,14 +91,16 @@
             </div>
         </div>
         <h3>Throw Visualization</h3>
-        <div class="throw-gif-wrapper">
-            <p class="camera-label">Side Camera</p>
-            <img class="throw-gif" id="side-view" src="data:image/gif;base64,{{ frames_side_base64 }}" alt="Side View GIF">
-        </div>
-        <div class="throw-gif-wrapper">
-            <p class="camera-label">Bottom Camera</p>
-            <img class="throw-gif" id="floor-view" src="data:image/gif;base64,{{ frames_floor_base64 }}" alt="Floor View GIF">
-        </div>
+        <div class="throw-gif-container">
+            <div class="throw-gif-wrapper">
+                <p class="camera-label">Side Camera</p>
+                <img class="throw-gif" id="side-view" src="data:image/gif;base64,{{ frames_side_base64 }}" alt="Side Camera GIF">
+            </div>
+            <div class="throw-gif-wrapper">
+                <p class="camera-label">Bottom Camera</p>
+                <img class="throw-gif" id="floor-view" src="data:image/gif;base64,{{ frames_floor_base64 }}" alt="Bottom Camera GIF">
+            </div>
+        </div>        
         {% endif %}
     </div>
     <script>
@@ -178,6 +179,40 @@
         }
 
         requestAnimationFrame(updateFrames);
+    </script>
+    <!-- Add this script tag at the end of the body tag -->
+    <script>
+        // When the page loads, check if there are frames in the local storage
+        document.addEventListener('DOMContentLoaded', function() {
+            let framesSide = localStorage.getItem('framesSide');
+            let framesFloor = localStorage.getItem('framesFloor');
+
+            if (framesSide && framesFloor) {
+                framesSide = JSON.parse(framesSide);
+                framesFloor = JSON.parse(framesFloor);
+                const imgSide = document.getElementById('side-throw');
+                const imgFloor = document.getElementById('floor-throw');
+
+                if (framesSide.length > 0) {
+                    imgSide.src = 'data:image/jpeg;base64,' + framesSide[0];
+                }
+
+                if (framesFloor.length > 0) {
+                    imgFloor.src = 'data:image/jpeg;base64,' + framesFloor[0];
+                }
+            }
+        });
+
+        // When the measure button is clicked, store the frames in the local storage
+        document.getElementById('measure-btn').addEventListener('click', function() {
+            let framesSide = {{ frames_side_base64|tojson }};
+            let framesFloor = {{ frames_floor_base64|tojson }};
+
+            if (framesSide && framesFloor) {
+                localStorage.setItem('framesSide', JSON.stringify(framesSide));
+                localStorage.setItem('framesFloor', JSON.stringify(framesFloor));
+            }
+        });
     </script>
 </body>
 </html>
