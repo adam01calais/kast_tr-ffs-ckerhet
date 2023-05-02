@@ -1,5 +1,5 @@
 import os
-from calibration_module3 import calibrate_cross
+from calibration_module import calibrate_cross
 from measure_module import measure_throw
 from velocity_module import velocity
 from accuracy_module import accuracy
@@ -37,7 +37,6 @@ class User(UserMixin, db.Model):
 
 class Calibration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    #description = db.Column(db.String(200), nullable=False)
     name = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -63,8 +62,8 @@ class Throw(db.Model):
     velocity = db.Column(db.Float, nullable=False)
     distance = db.Column(db.Float, nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    accuracy_x = db.Column(db.Float, nullable=False)  # Add this line
-    accuracy_y = db.Column(db.Float, nullable=False)  # Add this line
+    accuracy_x = db.Column(db.Float, nullable=False)  
+    accuracy_y = db.Column(db.Float, nullable=False) 
     name = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
@@ -96,7 +95,6 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-    #return db.session.get(User, int(user_id))
 
 
 @app.context_processor
@@ -188,8 +186,6 @@ def api_calibrate():
         orig_height1 = data['orig_height1']
         orig_width2 = data['orig_width2']
         orig_height2 = data['orig_height2']
-        print(center1)
-        print(center2)
 
         results = calibrate_cross(image1_filename, 
                                   image2_filename, 
@@ -209,7 +205,7 @@ def api_calibrate():
         img1, img2, x_side, y_side, x_floor, y_floor, bollradie_side, bollradie_floor, cross_position_x1_percentage, cross_position_y1_percentage, cross_position_x2_percentage, cross_position_y2_percentage, image_side_format, image_floor_format = results
 
         new_calibration = Calibration(
-            name="Your Calibration Name",  # Replace with desired name
+            name="Calibration",  # Replace with desired name
             user_id=current_user.id,
             cross_position_x_side=x_side,
             cross_position_y_side=y_side,
@@ -262,7 +258,7 @@ def upload_images():
 @login_required
 def calibration() -> Union[str, Response]:
     if request.method == 'GET':
-        return render_template('calibration3.html')
+        return render_template('calibration.html')
     return "Error"
 
 @app.route('/measure', methods=['GET', 'POST'])
@@ -286,8 +282,6 @@ def measure():
         file1.save(file_path1)
         file2.save(file_path2)
         frame_rate = int(request.form.get('frame_rate', 0))
-
-        #calibration_results = session.get('calibration_results', None)
 
         # Check if the user has a completed calibration in the database
         if selected_calibration_id:

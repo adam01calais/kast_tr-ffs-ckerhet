@@ -9,25 +9,13 @@
 </head>
 <body>
     <div class="background-image"></div>
-    <div id="flash-messages">
-        {% with messages = get_flashed_messages(with_categories=True) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert {% if category == 'success' %}alert-success{% else %}alert-error{% endif %}" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-    </div>    
+    <div id="flash-messages"></div>    
     <nav>
         <a href='#' class="website-name">Dodgeball Throw Analyzer</a>
         <ul>
-            <li class="{{ 'active' if request.endpoint == 'home' }}"><a href="/">Home</a></li>
-            <li class="{{ 'active' if request.endpoint == 'my_page' }}"><a href="/my-page">My Page</a></li>
-            <li class="{{ 'active' if request.endpoint == 'calibration' }}"><a href="/calibration">Calibration</a></li>
-            <li class="{{ 'active' if request.endpoint == 'measure' }}"><a href="/measure">Measure Throw</a></li>
-            <li class="{{ 'active' if request.endpoint == 'how_it_works' }}"><a href="/how-it-works">How does it work?</a></li>
+            {% for e, u in [('home', '/'), ('my_page', '/my-page'), ('calibration', '/calibration'), ('measure', '/measure'), ('how_it_works', '/how-it-works')] %}
+            <li class="{{ 'active' if request.endpoint == e }}"><a href="{{ u }}">{{ e.replace('_', ' ').title() }}</a></li>
+            {% endfor %}
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
@@ -37,72 +25,193 @@
     </nav>
     <div class="container">
         <h1>Calibration</h1>
-        <p>Before you can accurately measure your dodgeball throws, you need to calibrate your camera setup. Calibration ensures that the measurements taken by our system are precise and tailored to your specific setup.</p>
-
-        <h2>Calibration Process</h2>
-        <p>Follow these steps to calibrate your camera setup:</p>
-        <ol>
-            <li style="margin-bottom: 4px;">Hold a dodgeball at the center of the target on the wall, making sure it is clearly visible from both cameras.</li>
-            <li style="margin-bottom: 4px;">Simultaneously record a short video (5 seconds is sufficient) of the dodgeball from each camera, making sure that the entire object is visible in the frame. Both cameras should capture footage during the same 5-second time frame, but their recordings should be separate.</li>
-            <li style="margin-bottom: 4px;">Upload the calibration videos from each camera using the form below.</li>
-            <li>After uploading the videos, our system will analyze the footage and calculate the necessary calibration parameters for your camera setup.</li>
-        </ol>
-        <p>Once calibration is complete, you can proceed to measure your dodgeball throws.</p>
-
-        <h2>Upload Calibration Videos</h2>
-        <form action="/calibration" method="POST" enctype="multipart/form-data">
+        <p>In order to accurately analyze your dodgeball throws, we need to calibrate the system using images from your side and bottom cameras. Please follow the steps below to complete the calibration process.</p>
+        <form id="upload-form" enctype="multipart/form-data">
+            <h2>Upload Images for Calibration</h2>
+            <p>Upload one image from each camera, both containing a clear view of the calibration ball. Ensure that the whole ball is seen in the image and is not obstructed.</p>
+            {% for id in ['image1', 'image2'] %}
             <div class="form-group">
-                <label for="sideCamera">Side Camera: </label>
-                <input type="file" class="form-control-file" id="sideCamera" name="sideCamera" required>
-                <small class="form-text text-muted" style="font-size: 10px;">(Accepted formats: .mp4, .mov, .avi)</small>
+                <label for="{{ id }}">{% if id == 'image1' %}Side{% else %}Bottom{% endif %} Camera:</label>
+                <input type="file" name="{{ id }}" accept="image/png, image/jpeg, image/gif" required>
+                <small class="form-text text-muted" style="font-size: 10px;">(Accepted formats: .png, .jpeg, .gif)</small>
             </div>
-            <div class="form-group" style="margin-top: 15px;">
-                <label for="underneathCamera">Bottom Camera:</label>
-                <input type="file" class="form-control-file" id="underneathCamera" name="underneathCamera" required>
-                <small class="form-text text-muted" style="font-size: 10px;">(Accepted formats: .mp4, .mov, .avi)</small>
+            {% endfor %}
+            <button type="submit">Upload Images</button>
+        </form>
+        <form id="click-form" class="hidden">
+            <div id="image-container">
+                <h2>Click on the Images</h2>
+                <p>Click on the center of the ball and then on the edge of the ball for both images. The system will use these points to calculate the ball's size and position in the images.</p>
+                <img id="image1" class="calibration-image" alt="Image 1">
+                <!-- <p id="dimensions1"></p> -->
+                <img id="image2" class="calibration-image" alt="Image 2">
+                <!-- <p id="dimensions2"></p> -->
+                <button type="submit" id="calibrate-btn" disabled>Calibrate</button>
             </div>
-            <button type="submit" id="calibrate-btn">Calibrate</button>
         </form>
     </div>
     <script>
-        function initFlashMessagesObserver() {
-          const flashMessages = document.getElementById('flash-messages');
-          const observer = new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
-              if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                while (mutation.target.firstElementChild !== mutation.addedNodes[0]) {
-                  mutation.target.firstElementChild.remove();
-                }
-              }
-            });
-          });
-      
-          observer.observe(flashMessages, { childList: true });
-        }
-      
-        function addButtonLoader(button, form) {
-            form.addEventListener('submit', function (event) {
-                event.preventDefault();
-                button.innerHTML += `<span class="loader-container"><div class="loader"></div></span>`;
-                button.classList.add('loading');
-                setTimeout(() => {
-                    button.disabled = true;
-                    form.submit();
-                }, 100);
-            });
+        const showFlashMessage = (m, c = 'success') => {
+            const d = document.createElement('div');
+            d.className = `alert alert-${c}`;
+            d.setAttribute('role', 'alert');
+            d.innerText = m;
+            document.getElementById('flash-messages').appendChild(d);
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            initFlashMessagesObserver();
+        const addLoader = b => {
+            b.innerHTML += ' <span class="loader-container"><div class="loader"></div></span>';
+            b.classList.add('loading');
+            b.disabled = true;
+        }
 
-            const calibrateBtn = document.getElementById('calibrate-btn');
-            const calibrateForm = document.querySelector('form[method="POST"][action="/calibration"]');
-            addButtonLoader(calibrateBtn, calibrateForm);
+        const removeLoader = b => {
+            b.innerHTML = b.innerHTML.replace(/<span.*<\/span>/, '');
+            b.classList.remove('loading');
+            b.disabled = false;
+        }
 
-            const measureBtn = document.getElementById('measure-btn');
-            const measureForm = document.querySelector('form[method="POST"][action="/measure"]');
-            addButtonLoader(measureBtn, measureForm);
+        const img1 = document.getElementById('image1');
+        const img2 = document.getElementById('image2');
+        const processBtn = document.getElementById('calibrate-btn');
+
+        let clicks1 = [];
+        let clicks2 = [];
+
+        const handleClick = (event, img, clicks) => {
+            const rect = img.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            clicks.push([x, y]);
+            if (clicks.length === 2) {
+                img.style.opacity = '0.5';
+            }
+            checkProcessAvailability();
+        };
+
+        img1.addEventListener('click', (event) => {
+            handleClick(event, img1, clicks1);
+            console.log(`Image 1 Clicks: ${JSON.stringify(clicks1)}`);
         });
+        img2.addEventListener('click', (event) => {
+            handleClick(event, img2, clicks2);
+            console.log(`Image 2 Clicks: ${JSON.stringify(clicks2)}`);
+        });
+
+        function checkProcessAvailability() {
+            if (clicks1.length === 2 && clicks2.length === 2) {
+                processBtn.disabled = false;
+            }
+        }
+
+        processBtn.addEventListener('click', async (event) => {
+            event.preventDefault();
+            addLoader(processBtn);
+            const response = await fetch('/api/calibrate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    center1: clicks1[0],
+                    edge1: clicks1[1],
+                    center2: clicks2[0],
+                    edge2: clicks2[1],
+                    width1: img1.clientWidth,
+                    height1: img1.clientHeight,
+                    width2: img2.clientWidth,
+                    height2: img2.clientHeight,
+                    orig_width1: img1.naturalWidth,
+                    orig_height1: img1.naturalHeight,
+                    orig_width2: img2.naturalWidth,
+                    orig_height2: img2.naturalHeight,
+                    image1_filename: img1.dataset.filename,
+                    image2_filename: img2.dataset.filename
+                })
+
+            });
+
+            const results = await response.json();
+            if (results) {
+                showFlashMessage('Calibration successful and saved.', 'success');
+            } else {
+                showFlashMessage('Calibration failed', 'error');
+            }
+            removeLoader(processBtn);
+
+            // Reset image opacity and clicks
+            img1.style.opacity = '1';
+            img2.style.opacity = '1';
+            clicks1 = [];
+            clicks2 = [];
+            processBtn.disabled = true;
+
+            // // Hide the image container and display the upload form again
+            // imageContainer.classList.add('hidden');
+            // uploadForm.style.display = 'block';
+            // clickForm.classList.add('hidden'); // Hide the "Click on the Images" form
+            // uploadForm.style.display = 'block'; // Show the upload form
+
+            // Hide the image container and display the upload form again
+            imageContainer.classList.add('hidden');
+            document.getElementById('click-form').classList.add('hidden'); // Add this line
+            uploadForm.style.display = 'block';
+        });
+
+        const uploadForm = document.getElementById('upload-form');
+        const imageContainer = document.getElementById('image-container');
+        const rotateToLandscape = (img) => {
+            if (img.naturalWidth < img.naturalHeight) {
+                img.style.transform = 'rotate(90deg)';
+                img.style.transformOrigin = 'top left';
+            }
+        };
+
+        const setOrientationClass = (img) => {
+            window.addEventListener('load', () => {
+                rotateToLandscape(img);
+            });
+        };
+        const setImageDimensionsText = (img, dimensionsElementId) => {
+            img.onload = () => {
+                applyResizedStyle(img);
+                const dimensionsText = `Width: ${img.clientWidth}px, Height: ${img.clientHeight}px`;
+                document.getElementById(dimensionsElementId).innerText = dimensionsText;
+            };
+        };
+        const applyResizedStyle = (img) => {
+            img.classList.add('resized-image');
+        };
+
+        const setResizedClass = (img) => {
+            img.onload = () => {
+                applyResizedStyle(img);
+            };
+        };
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(uploadForm);
+            const response = await fetch('/api/upload-images', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            img1.src = `/uploads/${result.image1_filename}`;
+            img2.src = `/uploads/${result.image2_filename}`;
+
+            setImageDimensionsText(img1, 'dimensions1');
+            setImageDimensionsText(img2, 'dimensions2');
+            img1.dataset.filename = result.image1_filename;
+            img2.dataset.filename = result.image2_filename;
+
+            uploadForm.style.display = 'none';
+            imageContainer.classList.remove('hidden'); // Remove the 'hidden' class here
+            document.getElementById('click-form').classList.remove('hidden'); // Add this line
+        });
+        
     </script>
 </body>
 </html>
+

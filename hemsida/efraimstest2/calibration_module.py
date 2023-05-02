@@ -1,65 +1,67 @@
 import cv2
-import os
-from roboflow import Roboflow
 import numpy as np
-import tempfile
-import shutil
+import os
 
-def calibrate_cross(video_path):
-    # Create a temporary directory
-    with tempfile.TemporaryDirectory() as temp_dir:
-        print(f"Created folder dodge in {temp_dir}")
+def get_image_format(img):
+    img_height, img_width = img.shape[:2]
+    if img_width > img_height:
+        return 'landscape'
+    else:
+        return 'portrait'
 
-        # The rest of your code, but replace the hard-coded paths with temp_dir
-        video = cv2.VideoCapture(video_path)
+def rotate_to_landscape(img):
+    img_height, img_width = img.shape[:2]
+    if img_width < img_height:
+        img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    return img
 
-        i = 0
-        while video.isOpened():
-            ret, frame = video.read()
-            if not ret:
-                break
-            cv2.imwrite(os.path.join(temp_dir, 'dodge' + str(i) + '.jpg'), frame)
-            i += 1
-        frame_rate = int(video.get(cv2.CAP_PROP_FPS))
+def resize_image(img, width, height):
+    img_height, img_width = img.shape[:2]
+    
+    new_width = width
+    new_height = int(img_height * (width / img_width))
+    
+    scaling_factors = (img_width / new_width, img_height / new_height)
+    resized_img = cv2.resize(img, (new_width, new_height))
+    
+    return resized_img, scaling_factors
 
-        video.release()
-        cv2.destroyAllWindows()
+def adjust_points(points, scaling_factors):
+    return [point * scaling for point, scaling in zip(points, scaling_factors)]
 
-        rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq") #  CPkBglSIfMhKhrghnYcq balls-obosz 1, HEfNlI5lkTBazBknN8jz ball-images 2
-        project = rf.workspace().project("balls-obosz")
-        model = project.version(1).model
+def calibrate_cross(image1_filename, image2_filename, center1, edge1, center2, edge2, width1, height1, width2, height2, orig_width1, orig_height1, orig_width2, orig_height2, UPLOAD_FOLDER):
+    image1_path = os.path.join(UPLOAD_FOLDER, image1_filename)
+    image2_path = os.path.join(UPLOAD_FOLDER, image2_filename)
 
-        list_of_images_numbers = list(range(1, i, frame_rate))
+    img1 = cv2.imread(image1_path)
+    img2 = cv2.imread(image2_path)
 
-        x = []
-        y = []
-        w = []
-        h = []
+    image1_format = get_image_format(img1)
+    image2_format = get_image_format(img2)
 
-        for k in list_of_images_numbers:
-            prediction = model.predict(temp_dir + "/dodge" + str(k) + '.jpg')
-            for result in prediction.json()['predictions']:
-                x.append(result['x'])
-                y.append(result['y'])
-                w.append(result['width'])
-                h.append(result['height'])
-            if len(x) < 2:
-                continue
-            if len(y) < 2:
-                continue
-            if max(abs(x[-2] - x[-1]), abs(y[-2] - y[-1])) < 5:
-                print('Calibration for camera done successfully')
-                break
+    scaling_factors1 = (orig_width1 / width1, orig_height1 / height1)
+    scaling_factors2 = (orig_width2 / width2, orig_height2 / height2)
 
-        if len(x) == 0:
-            return None, None, None
-        else:
-            cross_position_x = x[-1]
-            cross_position_y = y[-1]
-            ball_radius = (w[-1] + h[-1]) / 4
+    img1, _ = resize_image(img1, width1, height1)
+    img2, _ = resize_image(img2, width2, height2)
 
-            print('x: ' + str(cross_position_x), 'y: ' + str(cross_position_y))
-            print('Bollens radie för camera: ' + str(ball_radius))
-            return cross_position_x, cross_position_y, ball_radius
+    adjusted_center1 = adjust_points(center1, scaling_factors1)
+    adjusted_edge1 = adjust_points(edge1, scaling_factors1)
+    adjusted_center2 = adjust_points(center2, scaling_factors2)
+    adjusted_edge2 = adjust_points(edge2, scaling_factors2)
 
-# The temporary directory is automatically deleted when exiting the 'with' block.
+    radius1 = int(np.linalg.norm(np.array(adjusted_center1) - np.array(adjusted_edge1)))
+    radius2 = int(np.linalg.norm(np.array(adjusted_center2) - np.array(adjusted_edge2)))
+
+    cross_position_x1, cross_position_y1 = adjusted_center1
+    cross_position_x2, cross_position_y2 = adjusted_center2
+
+    cross_position_x1_percentage = cross_position_x1 / orig_width1
+    cross_position_y1_percentage = cross_position_y1 / orig_height1
+    cross_position_x2_percentage = cross_position_x2 / orig_width2
+    cross_position_y2_percentage = cross_position_y2 / orig_height2
+
+    # print(f'För sidokameran är bollens radie: {radius1}')
+    # print(f'För bottenkameran är bollens radie: {radius2}')
+
+    return img1, img2, cross_position_x1, cross_position_y1, cross_position_x2, cross_position_y2, radius1, radius2, cross_position_x1_percentage, cross_position_y1_percentage, cross_position_x2_percentage, cross_position_y2_percentage, image1_format, image2_format
