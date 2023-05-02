@@ -1,48 +1,136 @@
 import numpy as np
-from scipy.optimize import curve_fit
-import math
 
-class DataAnalysis:
-    # Input: bollens poition för kamera 1 och 2
-    def __init__(self, dodgeball_position_x, dodgeball_position_y, dodgeball_diameter, 
-        image_width_x_camera, image_width_y_camera, distance_camera_x, distance_camera_y, focal_length_x, focal_length_y):
-        self.dodgeball_position_x = dodgeball_position_x
-        self.dodgeball_position_y = dodgeball_position_y
-        self.dodgeball_diameter = dodgeball_diameter                          # bollens diameter, kan hårdkodas sen
-        self.image_width_x_camera = image_width_x_camera                      # width of the video frame in pixels
-        self.image_width_y_camera = image_width_y_camera                      # width of the video frame in pixels
-        self.distance_camera_x = distance_camera_x                            # avstånd från kamera till kryss (om man kanske håller bollen vid krysset först)
-        self.distance_camera_y = distance_camera_y
-        self.focal_length_x = focal_length_x                                  # distance between the lens and the image sensor in meters camera x
-        self.focal_length_y = focal_length_y                                  # distance between the lens and the image sensor in meters camera y
+class DataAnalyzis:
 
+    def __init__(self, x_floor, y_floor, x_side, y_side, frame_rate, ball_radius_floor, ball_radius_side):
 
-    # Curve fitting is a type of optimization that finds an optimal set of parameters for a defined function that best fits a given set of observations.
-   # Får in en lista med positioner där bollen har varit varje frame/second, en lista för x och en för y
-    def calculate_velocity(self):
-        time = np.linspace(0, len(self.dodgeball_position_x), len(self.dodgeball_position_y))
-        velocity1, _ = curve_fit(lambda t, a, b: a*t + b,  time, self.dodgeball_position_x)
-        velocity2, _ = curve_fit(lambda t, a, b: a*t + b,  time, self.dodgeball_position_y)
-        return velocity1[0], velocity2[0]
-    
+        self.frame_rate=frame_rate
+        self.converter_side = 17.78/(2*ball_radius_side)
+        self.converter_floor = 17.78/(2*ball_radius_floor)
+        self.x_floor = x_floor
+        self.y_floor = y_floor
+        self.x_side = x_side
+        self.y_side = y_side
+
+    def velocity(self):
+
+        # Skapar en lista för hastigheten
+        velocity = []
         
-    # Får in x- och y-koordinat när bollen hamnade (cross_position x och y)
-    def calculate_accuracy(self, cross_position_x, cross_position_y):
-        # Hur fel bollen hamnade i x- och y-led mätt i pixlar
-        x_error_pixels = cross_position_x - self.dodgeball_position_x[-1] # sista elementet
-        y_error_pixels = cross_position_y - self.dodgeball_position_y[-1]
+        # Tar bort alla värden för bilder då en boll ej var detekterad, 
+        # fram tills första detekterade bollen
+        for element in self.x_floor[:]:
+            if int(element) == 0:
+                self.x_floor.remove(element) 
+            else:
+                break
+        for element in self.y_floor[:]:
+            if int(element) == 0:
+                self.y_floor.remove(element) 
+            else:
+                break
+        for element in self.x_side[:]:
+            if int(element) == 0:
+                self.x_side.remove(element) 
+            else:
+                break
+        for element in self.y_side[:]:
+            if int(element) == 0:
+                self.y_side.remove(element)
+            else:
+                break
 
-        # Behöver konverteras till cm (kanske?) eller annan längdenhet
-        # pixels_per_meter = video_frame_width / field_of_view_width_in_meters
-        # Measure the distance between the camera and the object in meters
+        count = 0
+        for element in range(0, len(self.x_floor)):
+            if self.x_floor[element] == 0:
+                count += 1
+                continue
+            if count == 1:
+                self.x_floor[element-count] = self.x_floor[element-count-1] - (self.x_floor[element-count-1] - self.x_floor[element])/(count+1)
+                count = 0
+            elif count == 2:
+                self.x_floor[element-count] = self.x_floor[element-count-1] - (self.x_floor[element-count-1] - self.x_floor[element])/(count+1)
+                self.x_floor[element-count+1] = self.x_floor[element-count] - (self.x_floor[element-count-1] - self.x_floor[element])/(count+1)
+                count = 0
+            elif count > 2:
+                print('Kastet kunde ej detekterades väl nog')
+        count = 0
+        for element in range(0, len(self.y_floor)):
+            if self.y_floor[element] == 0:
+                count += 1
+                continue
+            if count == 1:
+                self.y_floor[element-count] = self.y_floor[element-count-1] - (self.y_floor[element-count-1] - self.y_floor[element])/(count+1)
+                count = 0
+            elif count == 2:
+                self.y_floor[element-count] = self.y_floor[element-count-1] - (self.y_floor[element-count-1] - self.y_floor[element])/(count+1)
+                self.y_floor[element-count+1] = self.y_floor[element-count] - (self.y_floor[element-count-1] - self.y_floor[element])/(count+1)
+                count = 0
+            elif count > 2:
+                print('Kastet kunde ej detekterades väl nog')
+        count = 0
+        for element in range(0, len(self.x_side)):
+            if self.x_side[element] == 0:
+                count += 1
+                continue
+            if count == 1:
+                self.x_side[element-count] = self.x_side[element-count-1] + (self.x_side[element] - self.x_side[element-count-1])/(count+1)
+                count = 0
+            elif count == 2:
+                self.x_side[element-count] = self.x_side[element-count-1] + (self.x_side[element] - self.x_side[element-count-1])/(count+1)
+                self.x_side[element-count+1] = self.x_side[element-count] + (self.x_side[element] - self.x_side[element-count-1])/(count+1)
+                count = 0
+            elif count > 2:
+                print('Kastet kunde ej detekterades väl nog')
+        count = 0
+        for element in range(0, len(self.y_side)):
+            if self.y_side[element] == 0:
+                count += 1
+                continue
+            if count == 1:
+                self.y_side[element-count] = self.y_side[element-count-1] - (self.y_side[element-count-1] - self.y_side[element])/(count+1)
+                count = 0
+            elif count == 2:
+                self.y_side[element-count] = self.y_side[element-count-1] - (self.y_side[element-count-1] - self.y_side[element])/(count+1)
+                self.y_side[element-count+1] = self.y_side[element-count] - (self.y_side[element-count-1] - self.y_side[element])/(count+1)
+                count = 0
+            elif count > 2:
+                print('Kastet kunde ej detekterades väl nog')
 
-        pixel_size_x = (self.dodgeball_diameter / self.image_width_x_camera) * (self.distance_camera_x * self.focal_length_x)
-        pixel_size_y = (self.dodgeball_diameter / self.image_width_y_camera) * (self.distance_camera_y * self.focal_length_y)
-       
-        x = x_error_pixels * pixel_size_x
-        y = y_error_pixels * pixel_size_y
-       
-        accuracy = math.sqrt(math.pow(x, 2) + math.pow(y, 2))
+        diff = len(self.x_side) - len(self.y_floor)
 
-        return (accuracy)
+        if diff < 0:
+            del self.x_floor[0:-diff]
+            del self.y_floor[0:-diff]
+            del self.x_floor[-2:]
+            del self.y_floor[-2:]
+            del self.x_side[-2:]
+            del self.y_side[-2:]
+        elif diff > 0:
+            del self.x_side[0:diff]
+            del self.y_side[0:diff]
+            del self.x_floor[-2:]
+            del self.y_floor[-2:]
+            del self.x_side[-2:]
+            del self.y_side[-2:]
+        
+        for k in range(1,len(self.y_floor)):     
+            distance_between_frames = np.sqrt((self.converter_side*(self.x_side[k]-self.x_side[k-1]))**2+(self.converter_floor*(self.y_floor[k]-self.y_floor[k-1]))**2+(self.converter_side*(self.y_side[k]-self.y_side[k-1]))**2)
+            velocity.append(3.6 / 100 * distance_between_frames * self.frame_rate)  
+        mean_velocity = sum(velocity)/len(velocity)
+        print('Hasitgheten för bollen var: ' + str(mean_velocity) + ' km/h')
+        return mean_velocity
+
+    def accuracy(self, cross_position_floor_x, cross_position_floor_y, cross_position_side_x, cross_position_side_y):
     
+        cross_coord_x = cross_position_floor_y
+        cross_coord_y = cross_position_side_y
+        x_coord = self.x_floor[-1]
+        y_coord = self.y_side[-1]
+        diff_x = self.converter_floor * (cross_coord_x-x_coord)
+        diff_y = self.converter_side * (cross_coord_y-y_coord)
+        diff_tot = np.sqrt(diff_x**2 + diff_y**2)
+        print('Bollens avstånd från målet i x-led: ' + str(diff_x) + ' cm')
+        print('Bollens avstånd från målet i y_led: ' + str(diff_y) + ' cm')
+        print('Bollens totala avstånd från målet: ' + str(diff_tot) + ' cm')
+        return diff_x, diff_y, diff_tot
