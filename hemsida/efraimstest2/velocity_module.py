@@ -1,7 +1,7 @@
 import numpy as np
 
 def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_floor, frame_rate):
-
+        #print(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_floor, frame_rate)
         throw_ok = True
         # Skapar en lista för hastigheten
         velocity = []
@@ -116,6 +116,8 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
             del y_floor[-2:]
             del x_side[-2:]
             del y_side[-2:]
+
+        #print(y_floor)
         
         for k in range(1,len(y_floor)):     
             distance_between_frames = np.sqrt((converter_side*(x_side[k]-x_side[k-1]))**2+(converter_floor*(y_floor[k]-y_floor[k-1]))**2+(converter_side*(y_side[k]-y_side[k-1]))**2)
@@ -123,11 +125,11 @@ def velocity(x_side, y_side, x_floor, y_floor, ball_radius_side, ball_radius_flo
         if len(velocity) > 0:
             #print(velocity)
             mean_velocity = sum(velocity) / len(velocity)
-            print('Hasitgheten för bollen var: ' + str(mean_velocity) + ' km/h')
+            #print('Hasitgheten för bollen var: ' + str(mean_velocity) + ' km/h')
             return round(mean_velocity, 1), throw_ok
         else:
             # Handle the case when the velocity list is empty
-            print("No throw detected")
+            #print("No throw detected")
             mean_velocity = None 
             return mean_velocity, throw_ok
         

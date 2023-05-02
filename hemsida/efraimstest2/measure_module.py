@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 def measure_throw(video_path, ball_radius, camera_angle):
-
+        #print(ball_radius)
         # Öppnar kastvideon
         video = cv2.VideoCapture(video_path)
 
@@ -12,11 +12,15 @@ def measure_throw(video_path, ball_radius, camera_angle):
         # Ger bredden och höjden för videon i pixlar
         width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        # print(width)
+        # print(height)
         # Checkar om video är i formatet landscape eller portrait
         if width > height:
             landscape = True
+            video_format = 'landscape'
         else:
             portrait = True
+            video_format = 'portrait'
 
         # Tar ut den första bilden och anger den som bakgrundsbild
         _, bg = video.read()
@@ -184,16 +188,4 @@ def measure_throw(video_path, ball_radius, camera_angle):
                             del frame_list[-1:]
                             break
 
-
-            # Videon slutar också spelas upp om användaren trycker på tangenten 'q'
-            # key = cv2.waitKey(1)
-            # if key == ord('q'):
-            #     break
-
-        # Stänger ner videon
-        # video.release()
-        # cv2.destroyAllWindows() 
-
-        # Returnerar en lista vardera över x- % y-koordinater för de frames då bollen är i bild
-        #print(x_list, y_list)
-        return x_list, y_list, frame_list
+        return x_list, y_list, frame_list, video_format, width, height

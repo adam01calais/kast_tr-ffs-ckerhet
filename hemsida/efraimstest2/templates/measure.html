@@ -61,7 +61,7 @@
             <div class="results-text">
                 <h3>Throw Results:</h3>
                 <p>Velocity: {{ throw_info.velocity }} km/h</p>
-                <p>Distance from center: {{ throw_info.total_distance }} cm</p>
+                <p>Distance from target: {{ throw_info.total_distance }} cm</p>
             </div>
             <div class="svg-container">
                 <svg height="450" width="450">
@@ -142,8 +142,7 @@
             addButtonLoader(measureBtn, measureForm);
           }
         });
-    </script>
-    <script>
+    
         const framesSide = {{ frames_side_base64|tojson }};
         const framesFloor = {{ frames_floor_base64|tojson }};
         const gifDuration = 3000;  // Adjust this value to set the desired duration for both GIFs in milliseconds
@@ -179,38 +178,18 @@
         }
 
         requestAnimationFrame(updateFrames);
-    </script>
-    <!-- Add this script tag at the end of the body tag -->
-    <script>
-        // When the page loads, check if there are frames in the local storage
+        // When the page loads, check if there is throw info in the local storage
         document.addEventListener('DOMContentLoaded', function() {
-            let framesSide = localStorage.getItem('framesSide');
-            let framesFloor = localStorage.getItem('framesFloor');
-
-            if (framesSide && framesFloor) {
-                framesSide = JSON.parse(framesSide);
-                framesFloor = JSON.parse(framesFloor);
-                const imgSide = document.getElementById('side-throw');
-                const imgFloor = document.getElementById('floor-throw');
-
-                if (framesSide.length > 0) {
-                    imgSide.src = 'data:image/jpeg;base64,' + framesSide[0];
-                }
-
-                if (framesFloor.length > 0) {
-                    imgFloor.src = 'data:image/jpeg;base64,' + framesFloor[0];
-                }
-            }
-        });
-
-        // When the measure button is clicked, store the frames in the local storage
-        document.getElementById('measure-btn').addEventListener('click', function() {
-            let framesSide = {{ frames_side_base64|tojson }};
-            let framesFloor = {{ frames_floor_base64|tojson }};
-
-            if (framesSide && framesFloor) {
-                localStorage.setItem('framesSide', JSON.stringify(framesSide));
-                localStorage.setItem('framesFloor', JSON.stringify(framesFloor));
+            let throwInfo = localStorage.getItem('throwInfo');
+    
+            if (throwInfo) {
+                throwInfo = JSON.parse(throwInfo);
+                // Update the UI with the throw info
+                // Replace these with the actual IDs of the elements where the throw info is displayed
+                document.getElementById('velocity').innerText = throwInfo.velocity;
+                document.getElementById('accuracy_x').innerText = throwInfo.accuracy_x;
+                document.getElementById('accuracy_y').innerText = throwInfo.accuracy_y;
+                document.getElementById('total_distance').innerText = throwInfo.total_distance;
             }
         });
     </script>

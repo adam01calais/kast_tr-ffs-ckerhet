@@ -37,9 +37,8 @@
             {% endif %}
         </ul>
     </nav>
-    <h1>Register</h1>  
-
     <form method="POST" action="/register" class="form">
+        <h1>Register</h1>
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required>
         <br>
@@ -48,5 +47,21 @@
         <br>
         <input type="submit" value="Sign Up" class="button">
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.getElementById('flash-messages');
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                        while (mutation.target.firstElementChild !== mutation.addedNodes[0]) {
+                            mutation.target.firstElementChild.remove();
+                        }
+                    }
+                });
+            });
+    
+            observer.observe(flashMessages, { childList: true });
+        });
+    </script>
 </body>
 </html>

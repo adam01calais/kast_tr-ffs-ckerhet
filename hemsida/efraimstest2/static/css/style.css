@@ -86,6 +86,9 @@ form {
     padding: 20px;
     border: 1px solid #cccccc;
     border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 form label {
@@ -109,7 +112,7 @@ form button {
     border-radius: 8px;
     cursor: pointer;
     margin-top: 10px;
-    display: flex;
+    display: inline-flex;
     justify-content: center;
     align-items: center;
     min-width: 140px;
@@ -217,3 +220,100 @@ button.loading {
     }
 }
 
+/* tbody {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+} */
+
+table {
+    border-collapse: collapse;
+    margin: 0 auto 1rem;
+}
+
+table, th, td {
+    border: 1px solid black;
+    padding: 0.5rem;
+}
+
+th, td {
+    text-align: center;
+}
+
+.name-button {
+    background-color: #b11d1d;
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+    color: #ffffff;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: 2px solid #000000;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 140px;
+    height: 40px;
+}
+
+.name-button:hover, .name-button.hover-style {
+    background-color: #f70303;
+    border-color: grey;
+}
+
+.name-button.selected {
+    background-color: #f70303;
+    border-color: grey;
+}
+
+.hidden {
+    display: none;
+}
+
+#image-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+#image-container img {
+    margin: 0 10px;
+    max-width: 100%;  /* Add this line */
+    height: auto;     /* Add this line */
+}
+
+/* .calibration-image {
+    width: 400px;
+    height: 300px;
+    object-fit: contain;
+  } */
+
+.calibration-image {
+    width: 400px; /* Set the desired width */
+    max-height: 300px; /* Set the max-height */
+    object-fit: contain; /* Ensure the image is resized correctly */
+    margin: 10px; /* Add some margin between images */
+}
+
+.landscape-image {
+    width: 100%; /* Adjust this value as needed */
+    height: auto;
+    object-fit: cover;
+}
+
+.resized-image {
+    max-width: 400px; /* Adjust this value as needed */
+    max-height: 400px; /* Adjust this value as needed */
+    width: auto;
+    height: auto;
+}
+
+/* .portrait {
+    width: 300px;
+    height: 400px;
+    transform: rotate(-90deg);
+    
+} */

@@ -25,9 +25,9 @@ def calibrate_cross(video_path):
         video.release()
         cv2.destroyAllWindows()
 
-        rf = Roboflow(api_key="HEfNlI5lkTBazBknN8jz") #  CPkBglSIfMhKhrghnYcq
-        project = rf.workspace().project("ball-images")
-        model = project.version(2).model
+        rf = Roboflow(api_key="CPkBglSIfMhKhrghnYcq") #  CPkBglSIfMhKhrghnYcq balls-obosz 1, HEfNlI5lkTBazBknN8jz ball-images 2
+        project = rf.workspace().project("balls-obosz")
+        model = project.version(1).model
 
         list_of_images_numbers = list(range(1, i, frame_rate))
 

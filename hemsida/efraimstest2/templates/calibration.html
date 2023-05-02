@@ -81,28 +81,27 @@
         }
       
         function addButtonLoader(button, form) {
-            form.addEventListener('submit', function () {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
                 button.innerHTML += `<span class="loader-container"><div class="loader"></div></span>`;
                 button.classList.add('loading');
-                button.disabled = true;
+                setTimeout(() => {
+                    button.disabled = true;
+                    form.submit();
+                }, 100);
             });
         }
 
-      
         document.addEventListener('DOMContentLoaded', function () {
-          initFlashMessagesObserver();
-      
-          const pathname = window.location.pathname;
-      
-          if (pathname === '/calibration') {
+            initFlashMessagesObserver();
+
             const calibrateBtn = document.getElementById('calibrate-btn');
             const calibrateForm = document.querySelector('form[method="POST"][action="/calibration"]');
             addButtonLoader(calibrateBtn, calibrateForm);
-          } else if (pathname === '/measure') {
+
             const measureBtn = document.getElementById('measure-btn');
             const measureForm = document.querySelector('form[method="POST"][action="/measure"]');
             addButtonLoader(measureBtn, measureForm);
-          }
         });
     </script>
 </body>
