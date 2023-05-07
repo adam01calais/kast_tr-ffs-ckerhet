@@ -9,11 +9,11 @@ def get_image_format(img):
     else:
         return 'portrait'
 
-def rotate_to_landscape(img):
-    img_height, img_width = img.shape[:2]
-    if img_width < img_height:
-        img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-    return img
+# def rotate_to_landscape(img):
+#     img_height, img_width = img.shape[:2]
+#     if img_width < img_height:
+#         img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+#     return img
 
 def resize_image(img, width, height):
     img_height, img_width = img.shape[:2]

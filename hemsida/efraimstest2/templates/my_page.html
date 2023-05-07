@@ -35,14 +35,14 @@
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
-                <li><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
+                <li class="{{ 'active' if request.endpoint == 'login' }}"><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
             {% endif %}
         </ul>
     </nav>
     <div class="container">
         <h1>My Page</h1>
         <p>
-            Welcome to your personal page! Here, you can view all the throws you've recorded using the Dodgeball Throw Analyzer. Each throw displays its date, velocity, and distance from the target. You can also visualize the throw by clicking on the date.
+            Welcome to your personal page! Here, you can view all the throws you've analyzed using the Dodgeball Throw Analyzer as well as choosing which calibration to use for your next throw measurement. Each throw displays its date, velocity, and distance from the target. You can also visualize the throw by clicking on the button.
         </p>
         <h2>My Throws</h2>
         <table>
@@ -114,7 +114,8 @@
                     <tr>
                         <form action="{{ url_for('remove_calibration', calibration_id=calibration.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this calibration?');">
                             <td>
-                                <button type="button" class="btn btn-primary btn-sm name-button {{ 'selected' if calibration.id == session.get('selected_calibration_id') }}" id="calibration-{{ calibration.id }}" onclick="location.href='{{ url_for('select_calibration', calibration_id=calibration.id) }}';" ondblclick="event.preventDefault(); editName(this, '{{ url_for('update_calibration_name', calibration_id=calibration.id) }}');">{{ calibration.name }}</button>
+                                {% set month_day = calibration.date.strftime('%m-%d') %}
+                                <button type="button" class="btn btn-primary btn-sm name-button {{ 'selected' if calibration.id == session.get('selected_calibration_id') }}" id="calibration-{{ calibration.id }}" onclick="location.href='{{ url_for('select_calibration', calibration_id=calibration.id) }}';">{{ 'Calibration: ' ~ month_day }}</button>
                             </td>
                             <td>{{ calibration.date.strftime('%Y-%m-%d %H:%M') }}</td>
                             <td>

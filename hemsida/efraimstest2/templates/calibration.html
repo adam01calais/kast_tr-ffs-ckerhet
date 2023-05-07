@@ -9,26 +9,38 @@
 </head>
 <body>
     <div class="background-image"></div>
-    <div id="flash-messages"></div>    
+    <div id="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {% if category == 'success' %}alert-success{% else %}alert-error{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>     
     <nav>
-        <a href='#' class="website-name">Dodgeball Throw Analyzer</a>
+        <a href="#" class="website-name">Dodgeball Throw Analyzer</a>
         <ul>
-            {% for e, u in [('home', '/'), ('my_page', '/my-page'), ('calibration', '/calibration'), ('measure', '/measure'), ('how_it_works', '/how-it-works')] %}
-            <li class="{{ 'active' if request.endpoint == e }}"><a href="{{ u }}">{{ e.replace('_', ' ').title() }}</a></li>
-            {% endfor %}
+            <li class="{{ 'active' if request.endpoint == 'home' }}"><a href="/">Home</a></li>
+            <li class="{{ 'active' if request.endpoint == 'my_page' }}"><a href="/my-page">My Page</a></li>
+            <li class="{{ 'active' if request.endpoint == 'calibration' }}"><a href="/calibration">Calibration</a></li>
+            <li class="{{ 'active' if request.endpoint == 'measure' }}"><a href="/measure">Measure Throw</a></li>
+            <li class="{{ 'active' if request.endpoint == 'how_it_works' }}"><a href="/how-it-works">How does it work?</a></li>
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
-                <li><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
+                <li class="{{ 'active' if request.endpoint == 'login' }}"><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
             {% endif %}
         </ul>
     </nav>
     <div class="container">
         <h1>Calibration</h1>
-        <p>In order to accurately analyze your dodgeball throws, we need to calibrate the system using images from your side and bottom cameras. Please follow the steps below to complete the calibration process.</p>
+        <p>In order to accurately analyze your dodgeball throws, you need to calibrate the system using images captured from both side and bottom perspectives.</p>
         <form id="upload-form" enctype="multipart/form-data">
             <h2>Upload Images for Calibration</h2>
-            <p>Upload one image from each camera, both containing a clear view of the calibration ball. Ensure that the whole ball is seen in the image and is not obstructed.</p>
+            <p>Upload one image from each perspective, both containing a clear view of the calibration ball. Ensure that the whole ball is seen in the image and is not obstructed.</p>
             {% for id in ['image1', 'image2'] %}
             <div class="form-group">
                 <label for="{{ id }}">{% if id == 'image1' %}Side{% else %}Bottom{% endif %} Camera:</label>
@@ -39,14 +51,14 @@
             <button type="submit">Upload Images</button>
         </form>
         <form id="click-form" class="hidden">
-            <div id="image-container">
+            <div id="image-container" class="image-wrapper">
                 <h2>Click on the Images</h2>
-                <p>Click on the center of the ball and then on the edge of the ball for both images. The system will use these points to calculate the ball's size and position in the images.</p>
+                <p>Click as accurately as possible on the center and edge of the dodgeball for both images. The precision of your clicks will greatly impact the analysis, as the system uses these points to determine the ball's size and position in the images.</p>
                 <img id="image1" class="calibration-image" alt="Image 1">
-                <!-- <p id="dimensions1"></p> -->
                 <img id="image2" class="calibration-image" alt="Image 2">
-                <!-- <p id="dimensions2"></p> -->
-                <button type="submit" id="calibrate-btn" disabled>Calibrate</button>
+                <div class="calibrate-btn-container">
+                    <button type="submit" id="calibrate-btn" disabled>Calibrate</button>
+                </div>
             </div>
         </form>
     </div>
@@ -140,22 +152,13 @@
             }
             removeLoader(processBtn);
 
-            // Reset image opacity and clicks
             img1.style.opacity = '1';
             img2.style.opacity = '1';
             clicks1 = [];
             clicks2 = [];
             processBtn.disabled = true;
-
-            // // Hide the image container and display the upload form again
-            // imageContainer.classList.add('hidden');
-            // uploadForm.style.display = 'block';
-            // clickForm.classList.add('hidden'); // Hide the "Click on the Images" form
-            // uploadForm.style.display = 'block'; // Show the upload form
-
-            // Hide the image container and display the upload form again
             imageContainer.classList.add('hidden');
-            document.getElementById('click-form').classList.add('hidden'); // Add this line
+            document.getElementById('click-form').classList.add('hidden'); 
             uploadForm.style.display = 'block';
         });
 
@@ -207,8 +210,8 @@
             img2.dataset.filename = result.image2_filename;
 
             uploadForm.style.display = 'none';
-            imageContainer.classList.remove('hidden'); // Remove the 'hidden' class here
-            document.getElementById('click-form').classList.remove('hidden'); // Add this line
+            imageContainer.classList.remove('hidden');
+            document.getElementById('click-form').classList.remove('hidden');
         });
         
     </script>

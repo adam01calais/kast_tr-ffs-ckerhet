@@ -31,13 +31,13 @@
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
-                <li><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
+                <li class="{{ 'active' if request.endpoint == 'login' }}"><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
             {% endif %}
         </ul>
     </nav>
     <div class="container">
         <h1>Welcome to Dodgeball Throw Analyzer</h1>
-        <p>Measure the velocity and accuracy of your dodgeball throws using our advanced video analysis system. Get started by calibrating your cameras and measuring your throws.</p>
+        <p>Measure the velocity and accuracy of your dodgeball throws using our video analysis system. Get started by calibrating your cameras and measuring your throws.</p>
     </div>
 </body>
 </html>

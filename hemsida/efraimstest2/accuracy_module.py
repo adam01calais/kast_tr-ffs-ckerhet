@@ -71,21 +71,6 @@ def accuracy(x_floor,
         cross_coord_y = video_side_length * percentage_y
         throw_end_position_x = x_floor[-1]
         throw_end_position_y = y_side[-1]
-        # print(video_side_format)
-        # print(video_floor_format)
-        # print(image_side_format)
-        # print(image_floor_format)
-        # print(video_side_length)
-        # print(video_floor_length)
-        # print(cross_position_side_x_percentage)
-        # print(cross_position_side_y_percentage)
-        # print(cross_position_floor_x_percentage)
-        # print(cross_position_floor_y_percentage)
-        # print(cross_coord_x)
-        # print(cross_coord_y)
-        # print(throw_end_position_x)
-        # print(throw_end_position_y)
-        
 
         # Calculate accuracy
         diff_x = -1 * converter_floor * (cross_coord_x - throw_end_position_x)

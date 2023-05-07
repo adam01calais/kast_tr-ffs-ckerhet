@@ -9,6 +9,17 @@
 </head>
 <body>
     <div class="background-image"></div>
+    <div id="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert {% if category == 'success' %}alert-success{% else %}alert-error{% endif %}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>   
     <nav>
         <a href="#" class="website-name">Dodgeball Throw Analyzer</a>
         <ul>
@@ -20,7 +31,7 @@
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
-                <li><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
+                <li class="{{ 'active' if request.endpoint == 'login' }}"><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
             {% endif %}
         </ul>
     </nav>
@@ -28,25 +39,28 @@
 
     <div class="container">
         <h1>How does it work?</h1>
-        <p>Our system allows you to measure the velocity and accuracy of a dodgeball throw by analyzing video recordings from two different camera angles: one on the side and one underneath the throwing area. These cameras can be mobile cameras, making the setup process simple and accessible.</p>
+        <p>Our system allows you to measure the velocity and accuracy of a dodgeball throw by analyzing video recordings from two different camera angles: one on the side and one underneath the target. These cameras can be mobile cameras, making the setup process simple and accessible.</p>
         
         <h2>Camera Setup</h2>
         <p>Follow these steps to set up your mobile cameras:</p>
         <ol>
-            <li style="margin-bottom: 4px;">Position one camera on the side of the throwing area, ensuring it captures only the end of the ball's trajectory before it reaches the target (such as a taped up cross).</li>
-            <li style="margin-bottom: 4px;">Position the second camera underneath the throwing area, also capturing only the end of the ball's trajectory before it reaches the target.</li>
-            <li style="margin-bottom: 4px;">Position both cameras in line with the target, with the side camera at the same height as the target (e.g., 1.5 meters) and the bottom camera placed directly below. Ensure both cameras are situated approximately 1.2 meters away from the target's center. Properly aligning the cameras will enable the system to accurately measure velocity and accuracy by capturing the best possible view of the throw's final moments.</li>
-            <li>Ensure both cameras are securely mounted and won't move during the recording process.</li>
+            <li style="margin-bottom: 4px;">Position one camera on the side and the second camera underneath the target, such as a taped-up cross, at a distance of at least 1 meter, preferably around 1.5 meters away. Ensure both cameras capture the ball's trajectory as it hits the target. </li>
+            <li style="margin-bottom: 4px;">Position both cameras in line with the target, with the side camera at the same height as the target and the bottom camera placed directly below. Properly aligning the cameras will enable the system to accurately measure velocity and accuracy by capturing the best possible view of the throw's final moments.</li>
+            <li>Ensure both cameras are securely mounted and won't easily move as it's paramount that the cameras are in the same position during the whole process.</li>
         </ol>
         <p>After setting up your cameras, you must calibrate the camera setup prior to recording the dodgeball throw and uploading the videos to our platform. The system will then analyze the recordings, determine the throw's velocity and accuracy, and present the results.</p>
         
-        <h2>Measuring Results</h2>
-        <p>After uploading your videos, our system will calculate the following metrics:</p>
+        <h2>Calibrate your Camera Setup</h2>
+        <p>Once the cameras are set up, it's essential to calibrate the camera configuration. To do this, capture a photo with both cameras in their mounted positions while a dodgeball is positioned at the center of the target. Ensure the dodgeball is held in a manner that maximizes its visibility in both images. After capturing the photos, proceed to the <a href="/calibration">Calibration</a> tab to upload them, completing the calibration process.</p>
+
+        <h2>Measure your Throws</h2>
+        <p>After taking calibration photos, record the dodgeball throws in slow motion for more accurate measurements. Ensure the recordings at least capture the ball entering the frame and hitting the target plane. You may trim the videos to include only the essential moments, from 1 second before the ball enters the frame until it leaves, for easier processing and reduced memory usage. Each video should contain only one throw, as the system analyzes a single throw per video.</p>
+        <p>The next step is to upload the videos one at a time on the <a href="/measure">Measure Throw</a> tab and our system will calculate the following metrics:</p>
         <ul>
             <li><strong>Velocity:</strong> The speed of the dodgeball throw, measured in kilometers per hour (km/h).</li>
             <li><strong>Accuracy:</strong> The distance from the center of the target, measured in centimeters (cm).</li>
         </ul>
-        <p>With these results, you can track your performance over time, make adjustments to your throwing technique, and track your progress in improving your dodgeball skills.</p>
+        <p>With these results, you can track your performance over time, make adjustments to your throwing technique, and track your progress in improving your dodgeball throws.</p>
     </div>
 </body>
 </html>

@@ -122,7 +122,7 @@ def register():
             flash('A user with that username already exists. Please choose a different username.', 'error')
             return redirect(url_for('register'))
 
-    return render_template('register.html')
+    return render_template('sign_up.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -157,7 +157,7 @@ def logout():
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('home.html')
 
 @app.route('/uploads/<path:filename>')
 @login_required

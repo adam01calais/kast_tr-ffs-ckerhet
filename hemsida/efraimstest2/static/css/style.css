@@ -220,13 +220,6 @@ button.loading {
     }
 }
 
-/* tbody {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: auto;
-} */
-
 table {
     border-collapse: collapse;
     margin: 0 auto 1rem;
@@ -285,12 +278,6 @@ th, td {
     height: auto;     /* Add this line */
 }
 
-/* .calibration-image {
-    width: 400px;
-    height: 300px;
-    object-fit: contain;
-  } */
-
 .calibration-image {
     width: 400px; /* Set the desired width */
     max-height: 300px; /* Set the max-height */
@@ -311,9 +298,16 @@ th, td {
     height: auto;
 }
 
-/* .portrait {
-    width: 300px;
-    height: 400px;
-    transform: rotate(-90deg);
-    
-} */
+.image-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.calibrate-btn-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+}
