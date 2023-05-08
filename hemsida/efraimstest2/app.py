@@ -21,8 +21,10 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://efraimzetterqvist:@localhost/dodgeball_throws' #'postgresql://johannaedh:@localhost/postgres', behöver ändras för olika datorer om man vill testa
+# 'postgresql://johannaedh:@localhost/postgres', behöver ändras för olika datorer om man vill testa
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://efraimzetterqvist:@localhost/dodgeball_throws'
 app.add_url_rule('/uploads/<path:filename>', 'uploaded_file', build_only=True)
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
@@ -30,10 +32,12 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
+
 
 class Calibration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -55,24 +59,27 @@ class Calibration(db.Model):
 
     def __repr__(self):
         return f"Calibration('{self.name}', '{self.date}')"
-    
+
+
 class Throw(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     velocity = db.Column(db.Float, nullable=False)
     distance = db.Column(db.Float, nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    accuracy_x = db.Column(db.Float, nullable=False)  
-    accuracy_y = db.Column(db.Float, nullable=False) 
+    accuracy_x = db.Column(db.Float, nullable=False)
+    accuracy_y = db.Column(db.Float, nullable=False)
     name = db.Column(db.String(255), nullable=False)
 
     def __repr__(self):
         return f"Throw('{self.id}', '{self.velocity}', '{self.distance}', '{self.date}', '{self.accuracy_x}', '{self.accuracy_y}')"
 
+
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
 
 def encode_image_base64(img):
     img_pil = Image.fromarray(img)
@@ -81,12 +88,14 @@ def encode_image_base64(img):
     img_base64 = base64.b64encode(buffered.getvalue()).decode()
     return img_base64
 
+
 def convert_to_json_serializable(obj):
     if isinstance(obj, np.ndarray):
         return obj.tolist()
     elif isinstance(obj, tuple):
         return tuple(convert_to_json_serializable(item) for item in obj)
     return obj
+
 
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
@@ -119,7 +128,8 @@ def register():
             flash('You have successfully registered! Please log in.', 'success')
             return redirect(url_for('login'))
         else:
-            flash('A user with that username already exists. Please choose a different username.', 'error')
+            flash(
+                'A user with that username already exists. Please choose a different username.', 'error')
             return redirect(url_for('register'))
 
     return render_template('register.html')
@@ -159,10 +169,12 @@ def logout():
 def home():
     return render_template('index.html')
 
+
 @app.route('/uploads/<path:filename>')
 @login_required
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename, as_attachment=True)
+
 
 @app.route('/api/calibrate', methods=['POST'])
 @login_required
@@ -187,18 +199,18 @@ def api_calibrate():
         orig_width2 = data['orig_width2']
         orig_height2 = data['orig_height2']
 
-        results = calibrate_cross(image1_filename, 
-                                  image2_filename, 
-                                  center1, 
-                                  edge1, 
-                                  center2, 
-                                  edge2, 
-                                  width1, 
+        results = calibrate_cross(image1_filename,
+                                  image2_filename,
+                                  center1,
+                                  edge1,
+                                  center2,
+                                  edge2,
+                                  width1,
                                   height1,
                                   width2,
                                   height2,
-                                  orig_width1, 
-                                  orig_height1, 
+                                  orig_width1,
+                                  orig_height1,
                                   orig_width2,
                                   orig_height2,
                                   app.config['UPLOAD_FOLDER'])
@@ -231,6 +243,7 @@ def api_calibrate():
 
     return "Error"
 
+
 @app.route('/api/upload-images', methods=['POST'])
 @login_required
 def upload_images():
@@ -241,8 +254,10 @@ def upload_images():
         image1_filename = secure_filename(image1.filename)
         image2_filename = secure_filename(image2.filename)
 
-        image1_path = os.path.join(app.config['UPLOAD_FOLDER'], image1_filename)
-        image2_path = os.path.join(app.config['UPLOAD_FOLDER'], image2_filename)
+        image1_path = os.path.join(
+            app.config['UPLOAD_FOLDER'], image1_filename)
+        image2_path = os.path.join(
+            app.config['UPLOAD_FOLDER'], image2_filename)
 
         print(f"Saving image1 to {image1_path}")  # Add this line
         print(f"Saving image2 to {image2_path}")  # Add this line
@@ -254,12 +269,14 @@ def upload_images():
 
     return "Error"
 
+
 @app.route('/calibration', methods=['GET', 'POST'])
 @login_required
 def calibration() -> Union[str, Response]:
     if request.method == 'GET':
         return render_template('calibration.html')
     return "Error"
+
 
 @app.route('/measure', methods=['GET', 'POST'])
 @login_required
@@ -268,9 +285,9 @@ def measure():
     frames_side_base64 = []
     frames_floor_base64 = []
     frame_rate = 0
-    throw_info = session.get('throw_info', {'velocity': None, 
-                                            'accuracy_x': None, 
-                                            'accuracy_y': None, 
+    throw_info = session.get('throw_info', {'velocity': None,
+                                            'accuracy_x': None,
+                                            'accuracy_y': None,
                                             'total_distance': None})
     if request.method == 'POST':
         file1 = request.files['file1']
@@ -287,7 +304,8 @@ def measure():
         if selected_calibration_id:
             calibration = Calibration.query.get(selected_calibration_id)
         else:
-            calibration = Calibration.query.filter_by(user_id=current_user.id).first()
+            calibration = Calibration.query.filter_by(
+                user_id=current_user.id).first()
 
         if calibration:
             calibration_results = {
@@ -313,45 +331,51 @@ def measure():
             cal_y_floor = calibration_results['y_floor']
 
             # Run the measure function with the calibration results and the file paths
-            x_list_side, y_list_side, frames_side, video_format_side, video_side_width, video_side_height = measure_throw(file_path1, ball_radius_side, 'side')
-            x_list_floor, y_list_floor, frames_floor, video_format_floor, video_floor_width, video_floor_height = measure_throw(file_path2, ball_radius_floor, 'floor')
+            x_list_side, y_list_side, frames_side, video_format_side, video_side_width, video_side_height = measure_throw(
+                file_path1, ball_radius_side, 'side')
+            x_list_floor, y_list_floor, frames_floor, video_format_floor, video_floor_width, video_floor_height = measure_throw(
+                file_path2, ball_radius_floor, 'floor')
             print(video_format_floor)
             print(video_format_side)
 
             # Convert the frames to Base64-encoded images
-            frames_side_base64 = [encode_image_base64(frame) for frame in frames_side]
-            frames_floor_base64 = [encode_image_base64(frame) for frame in frames_floor]
+            frames_side_base64 = [encode_image_base64(
+                frame) for frame in frames_side]
+            frames_floor_base64 = [encode_image_base64(
+                frame) for frame in frames_floor]
 
             if frames_side and frames_floor:
-                session['frames_side_base64'] = [encode_image_base64(frame) for frame in frames_side]
-                session['frames_floor_base64'] = [encode_image_base64(frame) for frame in frames_floor]
+                session['frames_side_base64'] = [
+                    encode_image_base64(frame) for frame in frames_side]
+                session['frames_floor_base64'] = [
+                    encode_image_base64(frame) for frame in frames_floor]
 
             if len(x_list_side) and len(x_list_floor) > 3:
-                throw_velocity, throw_ok = velocity(x_list_side, 
-                                                    y_list_side, 
-                                                    x_list_floor, 
-                                                    y_list_floor, 
-                                                    ball_radius_side, 
-                                                    ball_radius_floor, 
+                throw_velocity, throw_ok = velocity(x_list_side,
+                                                    y_list_side,
+                                                    x_list_floor,
+                                                    y_list_floor,
+                                                    ball_radius_side,
+                                                    ball_radius_floor,
                                                     frame_rate)
                 if throw_ok == False:
                     flash('Throw could not be measured. Choose another video.', 'error')
-                    return render_template('measure.html', 
+                    return render_template('measure.html',
                                            throw_info=throw_info,
-                                           frames_side_base64=frames_side_base64, 
-                                           frames_floor_base64=frames_floor_base64, 
+                                           frames_side_base64=frames_side_base64,
+                                           frames_floor_base64=frames_floor_base64,
                                            frame_rate=frame_rate)
                 if throw_velocity == None:
                     session.pop('_flashes', None)
                     flash('Throw could not be measured. Choose another video.', 'error')
                 else:
-                    accuracy_x, accuracy_y, total_distance = accuracy(x_list_floor, 
-                                                                      y_list_side, 
-                                                                      ball_radius_side, 
-                                                                      ball_radius_floor, 
-                                                                      cal_x_floor, 
-                                                                      cal_y_floor, 
-                                                                      cal_x_side, 
+                    accuracy_x, accuracy_y, total_distance = accuracy(x_list_floor,
+                                                                      y_list_side,
+                                                                      ball_radius_side,
+                                                                      ball_radius_floor,
+                                                                      cal_x_floor,
+                                                                      cal_y_floor,
+                                                                      cal_x_side,
                                                                       cal_y_side,
                                                                       calibration.cross_position_x_floor_percentage,
                                                                       calibration.cross_position_y_floor_percentage,
@@ -367,51 +391,52 @@ def measure():
                                                                       video_floor_height)
                     session.pop('_flashes', None)
                     flash('Throw successfully measured!', 'success')
-                    throw_info = {'velocity': throw_velocity, 
-                                  'accuracy_x': accuracy_x, 
-                                  'accuracy_y': accuracy_y, 
+                    throw_info = {'velocity': throw_velocity,
+                                  'accuracy_x': accuracy_x,
+                                  'accuracy_y': accuracy_y,
                                   'total_distance': total_distance}
                     session['throw_info'] = throw_info
                     # Save the throw data to the database
-                    throw_count = Throw.query.filter_by(user_id=current_user.id).count()
-                    new_throw = Throw(user_id=current_user.id, 
-                                      velocity=throw_velocity, 
-                                      distance=total_distance, 
-                                      accuracy_x=accuracy_x, 
-                                      accuracy_y=accuracy_y, 
+                    throw_count = Throw.query.filter_by(
+                        user_id=current_user.id).count()
+                    new_throw = Throw(user_id=current_user.id,
+                                      velocity=throw_velocity,
+                                      distance=total_distance,
+                                      accuracy_x=accuracy_x,
+                                      accuracy_y=accuracy_y,
                                       name=f"Throw {throw_count + 1}")
                     db.session.add(new_throw)
                     db.session.commit()
 
-                return render_template('measure.html', 
-                                       throw_info=throw_info, 
-                                       frames_side_base64=frames_side_base64, 
-                                       frames_floor_base64=frames_floor_base64, 
+                return render_template('measure.html',
+                                       throw_info=throw_info,
+                                       frames_side_base64=frames_side_base64,
+                                       frames_floor_base64=frames_floor_base64,
                                        frame_rate=frame_rate)
 
             else:
                 session.pop('_flashes', None)
                 flash('Throw could not be measured. Choose another video.', 'error')
-                return render_template('measure.html', 
-                                       throw_info=throw_info, 
-                                       frames_side_base64=frames_side_base64, 
-                                       frames_floor_base64=frames_floor_base64, 
+                return render_template('measure.html',
+                                       throw_info=throw_info,
+                                       frames_side_base64=frames_side_base64,
+                                       frames_floor_base64=frames_floor_base64,
                                        frame_rate=frame_rate)
         else:
             session.pop('_flashes', None)
             flash("You need to calibrate before measuring.", 'error')
-            return render_template('measure.html', 
-                                   throw_info=throw_info, 
-                                   frames_side_base64=frames_side_base64, 
-                                   frames_floor_base64=frames_floor_base64, 
+            return render_template('measure.html',
+                                   throw_info=throw_info,
+                                   frames_side_base64=frames_side_base64,
+                                   frames_floor_base64=frames_floor_base64,
                                    frame_rate=frame_rate)
     else:
-        return render_template('measure.html', 
-                               throw_info=throw_info, 
-                               frames_side_base64=frames_side_base64, 
-                               frames_floor_base64=frames_floor_base64, 
+        return render_template('measure.html',
+                               throw_info=throw_info,
+                               frames_side_base64=frames_side_base64,
+                               frames_floor_base64=frames_floor_base64,
                                frame_rate=frame_rate)
-    
+
 
 @app.route('/how-it-works', methods=['GET'])
 def how_it_works():
@@ -438,6 +463,7 @@ def remove_throw(throw_id):
     flash('Throw removed successfully.', 'success')
     return redirect(url_for('my_page'))
 
+
 @app.route('/remove_calibration/<int:calibration_id>', methods=['POST'])
 @login_required
 def remove_calibration(calibration_id):
@@ -450,6 +476,7 @@ def remove_calibration(calibration_id):
         flash('Calibration not found or not authorized.', 'danger')
     return redirect(url_for('my_page'))
 
+
 @app.route('/select_calibration/<int:calibration_id>')
 @login_required
 def select_calibration(calibration_id):
@@ -458,6 +485,7 @@ def select_calibration(calibration_id):
         abort(403)
     session['selected_calibration_id'] = calibration_id
     return redirect(url_for('my_page'))
+
 
 @app.route('/update_calibration_name/<int:calibration_id>', methods=['POST'])
 @login_required
@@ -473,6 +501,7 @@ def update_calibration_name(calibration_id):
         return jsonify({'success': True})
     else:
         return jsonify({'success': False, 'message': 'Invalid name'})
+
 
 @app.route('/update_throw_name/<int:throw_id>', methods=['POST'])
 @login_required
