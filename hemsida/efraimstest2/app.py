@@ -16,7 +16,6 @@ import base64
 from io import BytesIO
 import numpy as np
 from typing import Union
-import hmac
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
@@ -70,21 +69,6 @@ class Throw(db.Model):
 
     def __repr__(self):
         return f"Throw('{self.id}', '{self.velocity}', '{self.distance}', '{self.date}', '{self.accuracy_x}', '{self.accuracy_y}')"
-
-def safe_str_cmp(a: str, b: str) -> bool:
-    """This function compares strings in somewhat constant time. This
-    requires that the length of at least one string is known in advance.
-
-    Returns `True` if the two strings are equal, or `False` if they are not.
-    """
-
-    if isinstance(a, str):
-        a = a.encode("utf-8")  # type: ignore
-
-    if isinstance(b, str):
-        b = b.encode("utf-8")  # type: ignore
-
-    return hmac.compare_digest(a, b)
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
