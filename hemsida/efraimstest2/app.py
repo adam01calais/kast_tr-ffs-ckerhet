@@ -21,7 +21,8 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://efraimzetterqvist:@localhost/dodgeball_throws' #'postgresql://johannaedh:@localhost/postgres', behöver ändras för olika datorer om man vill testa
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://efraimzetterqvist:@localhost/dodgeball_throws') #'postgresql://johannaedh:@localhost/postgres', behöver ändras för olika datorer om man vill testa
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///dodgeball_throws.db')
 app.add_url_rule('/uploads/<path:filename>', 'uploaded_file', build_only=True)
 
 db = SQLAlchemy(app)
