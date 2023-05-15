@@ -21,8 +21,13 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
+<<<<<<< HEAD
 # 'postgresql://johannaedh:@localhost/postgres', behöver ändras för olika datorer om man vill testa
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://efraimzetterqvist:@localhost/dodgeball_throws'
+=======
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql://efraimzetterqvist:@localhost/dodgeball_throws') #'postgresql://johannaedh:@localhost/postgres', behöver ändras för olika datorer om man vill testa
+#app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///dodgeball_throws.db')
+>>>>>>> af5744318c3c2cb042c5c82445843e771c5ddf8c
 app.add_url_rule('/uploads/<path:filename>', 'uploaded_file', build_only=True)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -132,7 +137,7 @@ def register():
                 'A user with that username already exists. Please choose a different username.', 'error')
             return redirect(url_for('register'))
 
-    return render_template('register.html')
+    return render_template('sign_up.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -167,7 +172,7 @@ def logout():
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('home.html')
 
 
 @app.route('/uploads/<path:filename>')

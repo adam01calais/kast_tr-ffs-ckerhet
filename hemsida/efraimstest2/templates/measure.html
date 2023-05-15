@@ -31,7 +31,7 @@
             {% if current_user.is_authenticated %}
                 <li><a href="{{ url_for('logout') }}">Logout</a></li>
             {% else %}
-                <li><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
+                <li class="{{ 'active' if request.endpoint == 'login' }}"><a href="{{ url_for('login', next=request.path) }}">Login</a></li>
             {% endif %}
         </ul>
     </nav>
